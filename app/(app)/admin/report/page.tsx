@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { statusDotClass, statusLabel, fmtDate } from "@/lib/utils";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+
 
 const STATUS_COLORS: Record<string, string> = {
   DONE: "#6fae7f", IN_PROGRESS: "#5b9bd5", WAITING_ON_CLIENT: "#c9974c",
@@ -74,37 +74,37 @@ export default function ReportPage() {
 
       {searched && (
         <>
-          {/* Attendance chart */}
+          {/* Attendance Breakdown */}
           {attChart.length > 0 && (
             <div className="card">
               <h2 style={{ fontSize: ".95rem", fontWeight: 600, marginBottom: "1.25rem" }}>Team Attendance Breakdown</h2>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={attChart} barSize={36}>
-                  <XAxis dataKey="label" tick={{ fill: "#8b92a3", fontSize: 12, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#8b92a3", fontSize: 11 }} axisLine={false} tickLine={false} width={28} />
-                  <Tooltip contentStyle={{ background: "var(--surface)", border: "2.5px solid var(--border)", borderRadius: 0, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-                  <Bar dataKey="count" radius={[4,4,0,0]}>
-                    {attChart.map(e => <Cell key={e.status} fill={STATUS_COLORS[e.status] ?? "#8b92a3"} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: "1rem" }}>
+                {attChart.map(e => (
+                  <div key={e.status} style={{ borderLeft: `3px solid ${STATUS_COLORS[e.status] ?? "#8b92a3"}`, paddingLeft: ".75rem" }}>
+                    <div className="font-mono" style={{ fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 }}>{e.count}</div>
+                    <div style={{ fontSize: ".7rem", textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-muted)", marginTop: ".25rem" }}>
+                      {e.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Work log chart */}
+          {/* Work log breakdown */}
           {logChart.length > 0 && (
             <div className="card">
               <h2 style={{ fontSize: ".95rem", fontWeight: 600, marginBottom: "1.25rem" }}>Team Work Items by Status</h2>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={logChart} barSize={36}>
-                  <XAxis dataKey="label" tick={{ fill: "#8b92a3", fontSize: 12, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#8b92a3", fontSize: 11 }} axisLine={false} tickLine={false} width={28} />
-                  <Tooltip contentStyle={{ background: "var(--surface)", border: "2.5px solid var(--border)", borderRadius: 0, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-                  <Bar dataKey="count" radius={[4,4,0,0]}>
-                    {logChart.map(e => <Cell key={e.status} fill={STATUS_COLORS[e.status] ?? "#8b92a3"} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: "1rem" }}>
+                {logChart.map(e => (
+                  <div key={e.status} style={{ borderLeft: `3px solid ${STATUS_COLORS[e.status] ?? "#8b92a3"}`, paddingLeft: ".75rem" }}>
+                    <div className="font-mono" style={{ fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 }}>{e.count}</div>
+                    <div style={{ fontSize: ".7rem", textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-muted)", marginTop: ".25rem" }}>
+                      {e.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
