@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { EMPLOYMENT_TYPES } from "@/lib/utils";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -33,13 +34,25 @@ export default function OnboardingPage() {
     <div className="auth-page">
       <div className="auth-card animate-in" style={{ maxWidth: 480 }}>
         <div style={{ marginBottom: "2rem" }}>
-          <div style={{ fontSize: "2rem", marginBottom: ".5rem" }}>🕷️</div>
-          <p style={{ color: "var(--text-muted)", fontSize: ".78rem", fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", marginBottom: ".5rem" }}>Origin Story</p>
-          <h1 className="font-title" style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: ".5rem" }}>
+          {/* Tab label like Landing's section heads */}
+          <span style={{
+            display: "inline-block",
+            background: "var(--border)", color: "var(--surface)",
+            fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
+            textTransform: "uppercase", fontWeight: 700,
+            fontSize: ".82rem", letterSpacing: ".16em",
+            padding: "3px 10px 2px", marginBottom: "12px",
+          }}>Origin Story</span>
+          <h1 style={{
+            fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
+            textTransform: "uppercase", fontWeight: 900,
+            fontSize: "1.8rem", lineHeight: .94, letterSpacing: ".012em",
+            color: "var(--text)", marginBottom: ".5rem",
+          }}>
             {firstName ? `Nice to meet you, ${firstName}!` : "Tell us about yourself"}
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: ".85rem", lineHeight: 1.5 }}>
-            Quick setup — 30 seconds and you&apos;re swinging through your work logs! 🕸️
+            Quick setup — 30 seconds and you&apos;re swinging through your work logs.
           </p>
         </div>
         {error && <div className="alert alert-error" style={{ marginBottom: "1.25rem" }}>{error}</div>}
@@ -49,19 +62,23 @@ export default function OnboardingPage() {
             <input id="ob-name" className="input" type="text" placeholder="Peter Parker" value={fullName} onChange={e => setFullName(e.target.value)} required autoFocus />
           </div>
           <div className="form-group">
-            <label className="input-label">Employment Type</label>
+            <label className="input-label">What best describes you?</label>
             <select id="ob-type" className="input" value={employmentType} onChange={e => setEmploymentType(e.target.value)}>
-              <option value="FULL_TIME">Full-time</option>
-              <option value="INTERN">Intern</option>
+              {EMPLOYMENT_TYPES.map(t => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
             </select>
+            <span style={{ fontSize: ".68rem", color: "var(--text-muted)", fontWeight: 500 }}>
+              Employed or not — everyone gets a streak.
+            </span>
           </div>
           <div className="form-group">
             <label className="input-label">Start Date</label>
             <input id="ob-start" className="input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
-            <span style={{ fontSize: ".68rem", color: "var(--text-muted)", fontWeight: 500 }}>When did you join? This helps track your attendance range.</span>
+            <span style={{ fontSize: ".68rem", color: "var(--text-muted)", fontWeight: 500 }}>When did this chapter begin? Sets the start of your tracking range.</span>
           </div>
           <button id="ob-submit" className="btn btn-primary" type="submit" disabled={loading} style={{ marginTop: ".25rem", width: "100%", justifyContent: "center", padding: ".75rem" }}>
-            {loading ? <span className="spinner" /> : "🚀 Let's Go!"}
+            {loading ? <span className="spinner" /> : "Let\u2019s Go"}
           </button>
         </form>
       </div>

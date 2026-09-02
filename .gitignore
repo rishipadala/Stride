@@ -44,5 +44,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local dev helpers (not part of the Next.js app)
-proxy.ts
+# NOTE: proxy.ts is NOT ignored. In Next.js 16 middleware.ts was renamed to
+# proxy.ts, so that file is core app code — it guards routes AND refreshes the
+# Supabase session on each navigation. Ignoring it means production has no
+# session refresh and users get logged out unexpectedly.
+
+/.claude
+AGENTS.md
+CLAUDE.md

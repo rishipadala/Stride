@@ -54,7 +54,7 @@ export default function ReportPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       <div>
-        <h1 className="font-title" style={{ fontSize: "2rem", fontWeight: 700 }}>Team Report</h1>
+        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Team Report</h1>
         <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>Aggregate stats across the entire team</p>
       </div>
 
@@ -82,7 +82,7 @@ export default function ReportPage() {
                 <BarChart data={attChart} barSize={36}>
                   <XAxis dataKey="label" tick={{ fill: "#8b92a3", fontSize: 12, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
                   <YAxis allowDecimals={false} tick={{ fill: "#8b92a3", fontSize: 11 }} axisLine={false} tickLine={false} width={28} />
-                  <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
+                  <Tooltip contentStyle={{ background: "var(--surface)", border: "2.5px solid var(--border)", borderRadius: 0, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
                   <Bar dataKey="count" radius={[4,4,0,0]}>
                     {attChart.map(e => <Cell key={e.status} fill={STATUS_COLORS[e.status] ?? "#8b92a3"} />)}
                   </Bar>
@@ -99,7 +99,7 @@ export default function ReportPage() {
                 <BarChart data={logChart} barSize={36}>
                   <XAxis dataKey="label" tick={{ fill: "#8b92a3", fontSize: 12, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
                   <YAxis allowDecimals={false} tick={{ fill: "#8b92a3", fontSize: 11 }} axisLine={false} tickLine={false} width={28} />
-                  <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
+                  <Tooltip contentStyle={{ background: "var(--surface)", border: "2.5px solid var(--border)", borderRadius: 0, color: "var(--text)", fontSize: 13 }} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
                   <Bar dataKey="count" radius={[4,4,0,0]}>
                     {logChart.map(e => <Cell key={e.status} fill={STATUS_COLORS[e.status] ?? "#8b92a3"} />)}
                   </Bar>
@@ -110,7 +110,7 @@ export default function ReportPage() {
 
           {/* Per-employee table */}
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ padding: "1.25rem 1.5rem", borderBottom: "2.5px solid var(--border)" }}>
               <h2 style={{ fontSize: ".95rem", fontWeight: 600 }}>Per-Employee Summary</h2>
             </div>
             <div className="table-wrap">

@@ -1,16 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const SPIDEY_QUOTES = [
-  "With great power comes great productivity! 🕷️",
-  "Your friendly neighborhood work tracker awaits!",
-  "Anyone can wear the mask. Time to suit up! 🦸",
-  "Every hero needs a log. This is yours. 🕸️",
-  "The city never sleeps, and neither does your hustle! ⚡",
-];
+import { getQuote } from "@/lib/quotes";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +11,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [quote] = useState(() => SPIDEY_QUOTES[Math.floor(Math.random() * SPIDEY_QUOTES.length)]);
+  const [quote, setQuote] = useState("Your friendly neighborhood work tracker awaits!");
+  useEffect(() => { setQuote(getQuote("login")); }, []);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -33,25 +27,27 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card animate-in">
-        {/* Hero section */}
+        {/* Hero section — no emojis, Big Shoulders Display */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ fontSize: "2.5rem", marginBottom: ".5rem" }}>🕸️</div>
-          <h1 className="font-title" style={{ fontSize: "2.4rem", fontWeight: 800, marginBottom: ".35rem", letterSpacing: "-0.02em" }}>Stride</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: ".85rem", fontWeight: 500, lineHeight: 1.5 }}>
+          <h1 style={{
+            fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
+            textTransform: "uppercase", fontWeight: 900,
+            fontSize: "2.6rem", lineHeight: .84, letterSpacing: ".012em",
+            color: "var(--text)", marginBottom: ".5rem",
+          }}>Stride</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: ".82rem", fontWeight: 500, lineHeight: 1.5 }}>
             {quote}
           </p>
         </div>
 
-        {/* Welcome back message */}
+        {/* Welcome back */}
         <div style={{
-          padding: ".6rem .9rem", borderRadius: "var(--radius-sm)",
-          border: "2px solid var(--border)", marginBottom: "1.25rem",
+          padding: ".6rem .9rem",
+          border: "2.5px solid var(--border)", marginBottom: "1.25rem",
           background: "var(--accent-dim)", fontSize: ".82rem", fontWeight: 600,
-          display: "flex", alignItems: "center", gap: ".5rem",
           boxShadow: "var(--shadow-xs)",
         }}>
-          <span style={{ fontSize: "1.1rem" }}>👋</span>
-          <span>Welcome back, hero! Sign in to continue your streak.</span>
+          Welcome back, hero! Sign in to continue your streak.
         </div>
 
         {error && <div className="alert alert-error" style={{ marginBottom: "1.25rem" }}>{error}</div>}
@@ -65,7 +61,7 @@ export default function LoginPage() {
             <input id="login-password" className="input" type="password" placeholder="Your secret identity..." value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
           </div>
           <button id="login-submit" className="btn btn-primary" type="submit" disabled={loading} style={{ marginTop: ".5rem", width: "100%", justifyContent: "center", padding: ".7rem" }}>
-            {loading ? <span className="spinner" /> : "🚀 Swing In"}
+            {loading ? <span className="spinner" /> : "Swing In"}
           </button>
         </form>
         <div className="divider" />

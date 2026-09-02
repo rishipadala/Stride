@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -51,7 +51,7 @@ export default function EmployeesPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
         <div>
-          <h1 className="font-title" style={{ fontSize: "2rem", fontWeight: 700 }}>Employees</h1>
+          <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Employees</h1>
           <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>{employees.length} team {employees.length === 1 ? "member" : "members"}</p>
         </div>
         <button id="emp-add-toggle" className="btn btn-primary" onClick={() => { setShowForm(!showForm); setAddMsg(null); }}>

@@ -1,62 +1,69 @@
 @import "tailwindcss";
 
-/* ===== NEO-BRUTALISM DESIGN SYSTEM ===== */
+/* ===== NEO-BRUTALISM DESIGN SYSTEM — COMIC-BOOK EDITION =====
+   Unified with Landing.tsx's four-colour press on pulp paper.
+   Every surface is a panel, every shadow is ink, every corner is sharp. */
 
 :root {
-  /* Backgrounds */
-  --bg:         #f4f4f0;
-  --surface:    #ffffff;
-  --surface-alt: #fafaf8;
+  /* Paper & surfaces — pulp newsprint */
+  --bg:         #e2dbc9;
+  --surface:    #f4efe2;
+  --surface-alt: #ece6d7;
 
-  /* Borders & Lines */
-  --border:     #000000;
-  --border-w:   2px;
-  --shadow:     4px 4px 0 0 #000;
-  --shadow-sm:  3px 3px 0 0 #000;
-  --shadow-xs:  2px 2px 0 0 #000;
+  /* Ink & borders — heavy line work */
+  --border:     #16120f;
+  --border-w:   2.5px;
+  --shadow:     5px 5px 0 0 #16120f;
+  --shadow-sm:  3px 3px 0 0 #16120f;
+  --shadow-xs:  2px 2px 0 0 #16120f;
 
-  /* Text */
-  --text:       #1a1a1a;
-  --text-muted: #555555;
+  /* Text — ink on newsprint */
+  --text:       #16120f;
+  --text-muted: #5d564c;
 
-  /* Primary Accent */
+  /* Primary Accent — yellow plate */
   --accent:     #ffd831;
-  --accent-dim: rgba(255,216,49,0.25);
+  --accent-dim: rgba(255,216,49,0.18);
   --accent-hover: #ffc800;
 
-  /* Status Colors — Bright & Bold */
+  /* CMYK press colours */
+  --cb-cyan:    #12a5d4;
+  --cb-magenta: #e5266d;
+  --cb-red:     #d6202a;
+
+  /* Status Colors — same values, sharper presentation */
   --present:    #22c55e;
   --wfh:        #3b82f6;
   --half-day:   #f59e0b;
   --to-impl:    #a855f7;
   --absent:     #ef4444;
 
-  /* Radius — sharper for brutalism */
-  --radius-sm:  4px;
-  --radius:     6px;
-  --radius-lg:  8px;
+  /* Radius — ZERO for brutalism */
+  --radius-sm:  0;
+  --radius:     0;
+  --radius-lg:  0;
 
   /* Chevron icon for selects */
-  --chevron:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  --chevron-sm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --chevron:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316120f' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --chevron-sm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2316120f' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
 
-/* ===== DARK MODE ===== */
+/* ===== DARK MODE — Night edition ===== */
 [data-theme="dark"] {
-  --bg:         #0f0f0f;
-  --surface:    #1a1a1a;
-  --surface-alt: #242424;
-  --border:     #444444;
-  --shadow:     4px 4px 0 0 rgba(255,255,255,0.06);
+  --bg:         #100e15;
+  --surface:    #1a1822;
+  --surface-alt: #24222e;
+  --border:     #6a6478;
+  --shadow:     5px 5px 0 0 rgba(255,255,255,0.06);
   --shadow-sm:  3px 3px 0 0 rgba(255,255,255,0.06);
   --shadow-xs:  2px 2px 0 0 rgba(255,255,255,0.06);
-  --text:       #f0f0f0;
-  --text-muted: #888888;
+  --text:       #ece6d9;
+  --text-muted: #9a93a6;
   --accent:     #ffd831;
-  --accent-dim: rgba(255,216,49,0.12);
+  --accent-dim: rgba(255,216,49,0.10);
   --accent-hover: #ffc800;
-  --chevron:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  --chevron-sm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --chevron:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a93a6' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --chevron-sm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239a93a6' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
 
 /* Dark-mode overrides for colored components */
@@ -68,6 +75,22 @@
 [data-theme="dark"] .spinner { border-color: #333; border-top-color: var(--accent); }
 [data-theme="dark"] .dot-unmarked { background: #555; }
 [data-theme="dark"] td { border-bottom-color: #333; }
+
+/* ===== FOCUS =====
+   .input and .status-select both clear the native outline, and the
+   buttons never defined a focus state at all, so keyboard users had
+   no visible caret anywhere in the app. One ink ring, applied only
+   for keyboard focus so it never fires on mouse clicks. */
+:focus-visible {
+  outline: 2.5px solid var(--border);
+  outline-offset: 2px;
+}
+.btn:focus-visible,
+.att-card:focus-visible,
+.nav-link:focus-visible,
+.theme-toggle:focus-visible { outline-offset: 3px; }
+.input:focus-visible,
+.status-select:focus-visible { outline-offset: 0; }
 
 /* ===== RESETS ===== */
 *,*::before,*::after { box-sizing: border-box; }
@@ -82,12 +105,18 @@ body {
   transition: background-color .2s, color .2s;
 }
 
-/* ===== TYPOGRAPHY ===== */
-.font-title { font-family: "Fraunces", Georgia, serif; }
+/* ===== TYPOGRAPHY =====
+   .font-title now maps to Big Shoulders Display — the same
+   display face the landing page uses for headlines. */
+.font-title {
+  font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .012em;
+}
 .font-mono  { font-family: "IBM Plex Mono", monospace; }
 
 /* ===== STATUS DOTS ===== */
-.status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; border: 1.5px solid var(--border); }
+.status-dot { width: 10px; height: 10px; display: inline-block; flex-shrink: 0; border: 2px solid var(--border); }
 .dot-present    { background: var(--present); }
 .dot-wfh        { background: var(--wfh); }
 .dot-half-day   { background: var(--half-day); }
@@ -100,58 +129,18 @@ body {
 .dot-blocked    { background: var(--absent); }
 .dot-unmarked   { background: #d4d4d4; }
 
-/* ===== CARDS — HARD SHADOW + SPIDEY WEB CORNER ===== */
+/* ===== CARDS — PANELS WITH INK SHADOW ===== */
 .card {
   background: var(--surface);
   border: var(--border-w) solid var(--border);
-  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow);
   transition: background .2s, border-color .2s, box-shadow .2s;
   position: relative; overflow: hidden;
 }
-.card::after, .card-sm::after {
-  content: ""; position: absolute; top: -1px; right: -1px;
-  width: 85px; height: 85px; pointer-events: none;
-  background:
-    /* Radial lines fanning from top-right corner */
-    conic-gradient(from 180deg at 100% 0%,
-      rgba(220,38,38,0.45) 0deg, transparent 1.2deg,
-      transparent 14deg, rgba(220,38,38,0.3) 14.5deg, transparent 16deg,
-      transparent 29deg, rgba(220,38,38,0.3) 29.5deg, transparent 31deg,
-      transparent 44deg, rgba(220,38,38,0.45) 44.5deg, transparent 46deg,
-      transparent 59deg, rgba(220,38,38,0.3) 59.5deg, transparent 61deg,
-      transparent 74deg, rgba(220,38,38,0.3) 74.5deg, transparent 76deg,
-      transparent 88.5deg, rgba(220,38,38,0.45) 89deg, transparent 91deg,
-      transparent 360deg
-    ),
-    /* Concentric quarter-circle arcs */
-    radial-gradient(circle at 100% 0%, transparent 14px, rgba(220,38,38,0.25) 14px, rgba(220,38,38,0.25) 16px, transparent 16px),
-    radial-gradient(circle at 100% 0%, transparent 30px, rgba(220,38,38,0.2) 30px, rgba(220,38,38,0.2) 32px, transparent 32px),
-    radial-gradient(circle at 100% 0%, transparent 48px, rgba(220,38,38,0.18) 48px, rgba(220,38,38,0.18) 50px, transparent 50px),
-    radial-gradient(circle at 100% 0%, transparent 66px, rgba(220,38,38,0.14) 66px, rgba(220,38,38,0.14) 68px, transparent 68px);
-}
-[data-theme="dark"] .card::after, [data-theme="dark"] .card-sm::after {
-  background:
-    conic-gradient(from 180deg at 100% 0%,
-      rgba(220,38,38,0.6) 0deg, transparent 1.2deg,
-      transparent 14deg, rgba(220,38,38,0.4) 14.5deg, transparent 16deg,
-      transparent 29deg, rgba(220,38,38,0.4) 29.5deg, transparent 31deg,
-      transparent 44deg, rgba(220,38,38,0.6) 44.5deg, transparent 46deg,
-      transparent 59deg, rgba(220,38,38,0.4) 59.5deg, transparent 61deg,
-      transparent 74deg, rgba(220,38,38,0.4) 74.5deg, transparent 76deg,
-      transparent 88.5deg, rgba(220,38,38,0.6) 89deg, transparent 91deg,
-      transparent 360deg
-    ),
-    radial-gradient(circle at 100% 0%, transparent 14px, rgba(220,38,38,0.35) 14px, rgba(220,38,38,0.35) 16px, transparent 16px),
-    radial-gradient(circle at 100% 0%, transparent 30px, rgba(220,38,38,0.3) 30px, rgba(220,38,38,0.3) 32px, transparent 32px),
-    radial-gradient(circle at 100% 0%, transparent 48px, rgba(220,38,38,0.25) 48px, rgba(220,38,38,0.25) 50px, transparent 50px),
-    radial-gradient(circle at 100% 0%, transparent 66px, rgba(220,38,38,0.2) 66px, rgba(220,38,38,0.2) 68px, transparent 68px);
-}
 .card-sm {
   background: var(--surface);
   border: var(--border-w) solid var(--border);
-  border-radius: var(--radius);
   padding: 1rem;
   box-shadow: var(--shadow-sm);
   transition: background .2s, border-color .2s, box-shadow .2s;
@@ -161,8 +150,8 @@ body {
 /* ===== ATTENDANCE CARDS ===== */
 .att-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; padding: .85rem .5rem; border-radius: var(--radius);
-  border: 2px solid var(--border); background: var(--surface);
+  gap: 6px; padding: .85rem .5rem;
+  border: 2.5px solid var(--border); background: var(--surface);
   color: var(--text); font-family: "Inter", sans-serif;
   cursor: pointer; transition: all .15s ease;
   box-shadow: var(--shadow-xs);
@@ -175,18 +164,11 @@ body {
 .att-active-HALF_DAY { background: #fde68a; color: #92400e; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-LEAVE    { background: #e9d5ff; color: #7e22ce; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 
-/* ===== ATTENDANCE REACTION BANNER ===== */
-@keyframes slideInFade {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.att-reaction { animation: slideInFade .25s ease forwards; }
-
 /* ===== BUTTONS — MECHANICAL CLICK ===== */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: .55rem 1.25rem; border-radius: var(--radius-sm);
-  border: 2px solid var(--border); font-family: "Inter", sans-serif;
+  padding: .55rem 1.25rem;
+  border: 2.5px solid var(--border); font-family: "Inter", sans-serif;
   font-size: .85rem; font-weight: 700; cursor: pointer;
   transition: all .1s ease; text-decoration: none;
   text-transform: uppercase; letter-spacing: .04em;
@@ -200,10 +182,10 @@ body {
 .btn-danger  { background: #fecaca; color: #dc2626; }
 .btn:disabled{ opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: var(--shadow-sm) !important; }
 
-/* ===== INPUTS — BOLD BORDERS ===== */
+/* ===== INPUTS — BOLD INK BORDERS ===== */
 .input {
   width: 100%; background: var(--surface);
-  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  border: 2.5px solid var(--border);
   color: var(--text); font-family: "Inter", sans-serif;
   font-size: .9rem; padding: .6rem .9rem; outline: none;
   transition: box-shadow .15s, border-color .15s, background .2s;
@@ -224,13 +206,13 @@ select.input {
 }
 .form-group { display: flex; flex-direction: column; gap: .35rem; }
 
-/* ===== BADGES — SOLID FILLS ===== */
+/* ===== BADGES — INK BORDERED ===== */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: .25rem .7rem; border-radius: 999px;
+  padding: .25rem .7rem;
   font-size: .72rem; font-weight: 700;
   letter-spacing: .04em; text-transform: uppercase;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
 }
 .badge-PRESENT, .badge-DONE               { background: #bbf7d0; color: #15803d; }
 .badge-WFH, .badge-IN_PROGRESS            { background: #bfdbfe; color: #1d4ed8; }
@@ -244,12 +226,11 @@ select.input {
   -webkit-appearance: none;
   padding: .25rem .55rem;
   padding-right: 1.5rem;
-  border-radius: 999px;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .04em;
   text-transform: uppercase;
-  border: 1.5px solid var(--border);
+  border: 2px solid var(--border);
   cursor: pointer;
   outline: none;
   transition: all .12s ease;
@@ -260,16 +241,8 @@ select.input {
 .status-select:hover { box-shadow: var(--shadow-xs); transform: translate(-1px, -1px); }
 .status-select:focus { box-shadow: var(--shadow-xs); }
 
-/* ===== DAY BANNER ===== */
-@keyframes bannerPop {
-  0% { transform: scale(0.95); opacity: 0; }
-  60% { transform: scale(1.02); }
-  100% { transform: scale(1); opacity: 1; }
-}
-.day-banner { animation: bannerPop .35s ease forwards; }
-
 /* ===== DIVIDER ===== */
-.divider { border: none; border-top: 2px solid var(--border); margin: 1.25rem 0; }
+.divider { border: none; border-top: 2.5px solid var(--border); margin: 1.25rem 0; }
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -277,11 +250,11 @@ select.input {
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 18px; height: 18px;
-  border: 2.5px solid #ddd; border-top-color: #dc2626;
+  border: 2.5px solid #ddd; border-top-color: var(--cb-red, #d6202a);
   border-radius: 50%; animation: spin .7s linear infinite;
   display: inline-block;
 }
-[data-theme="dark"] .spinner { border-color: #333; border-top-color: #dc2626; }
+[data-theme="dark"] .spinner { border-color: #333; border-top-color: var(--cb-red, #d6202a); }
 
 /* ===== SPIDEY WEB-CLICK BURST ===== */
 .web-burst {
@@ -291,7 +264,7 @@ select.input {
 .web-strand {
   position: absolute; top: 0; left: -1px;
   width: 2.5px; height: 45px;
-  background: linear-gradient(to bottom, rgba(220,38,38,0.8), rgba(220,38,38,0.2), transparent);
+  background: linear-gradient(to bottom, rgba(214,32,42,0.8), rgba(214,32,42,0.2), transparent);
   transform-origin: top center;
   animation: webShoot .4s ease-out forwards;
 }
@@ -306,21 +279,33 @@ select.input {
   min-height: 100vh; display: flex;
   align-items: center; justify-content: center;
   padding: 2rem; background: var(--bg);
+  position: relative;
+}
+/* Subtle halftone dot texture behind the auth card */
+.auth-page::before {
+  content: ''; position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(var(--text) .6px, transparent .7px),
+    radial-gradient(var(--text) .6px, transparent .7px);
+  background-size: 8px 8px, 8px 8px;
+  background-position: 0 0, 4px 4px;
+  opacity: .06;
 }
 .auth-card {
+  position: relative; z-index: 1;
   width: 100%; max-width: 420px;
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: 2.5px solid var(--border);
   padding: 2.5rem;
-  box-shadow: 6px 6px 0 0 rgba(0,0,0,0.9);
+  box-shadow: 6px 6px 0 0 var(--border);
 }
 [data-theme="dark"] .auth-card { box-shadow: 6px 6px 0 0 rgba(255,255,255,0.06); }
 
 /* ===== NAV LINKS ===== */
 .nav-link {
   display: flex; align-items: center; gap: 10px;
-  padding: .55rem .75rem; border-radius: var(--radius-sm);
+  padding: .55rem .75rem;
   color: var(--text-muted); font-size: .88rem; font-weight: 600;
   text-decoration: none; transition: all .12s; white-space: nowrap;
   border: 2px solid transparent;
@@ -333,14 +318,41 @@ select.input {
 
 /* ===== STAT CARDS ===== */
 .stat-card {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: var(--radius); padding: 1.1rem 1.25rem;
+  background: var(--surface); border: 2.5px solid var(--border);
+  padding: 1.1rem 1.25rem;
   display: flex; flex-direction: column; gap: .25rem;
   box-shadow: var(--shadow-sm);
   transition: background .2s, border-color .2s;
 }
 .stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1; }
 .stat-label { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+
+/* One card in the row gets the yellow plate: the streak, because it's
+   the only figure on the page that can be LOST. The rest are counts
+   and stay ink-on-paper, so the eye lands in exactly one place. */
+.stat-streak { background: var(--accent); }
+.stat-streak .stat-value,
+.stat-streak .stat-label,
+.stat-streak .stat-note { color: #16120f; }
+.stat-streak .stat-label { opacity: .78; }
+
+/* The line under the streak number. Sits at label size but in ink
+   rather than muted grey, since on the yellow plate muted grey is
+   unreadable. */
+.stat-note { font-size: .72rem; font-weight: 600; line-height: 1.35; margin-top: .1rem; }
+
+/* Project names are text, not a number, so they can't use .stat-value's
+   1.75rem without wrapping badly. Narrower, tighter, still the loudest
+   thing in its own card. */
+.stat-project {
+  font-size: 1.05rem; font-weight: 800; line-height: 1.15;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* The top-project card carries a name, so it gets two columns. This
+   used to be an inline style, which the small-screen override below
+   could only beat with !important. */
+.stat-span-2 { grid-column: span 2; }
 
 /* ===== TABLES ===== */
 .table-wrap { overflow-x: auto; }
@@ -349,26 +361,26 @@ th {
   text-align: left; font-size: .72rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .06em;
   color: var(--text-muted); padding: .6rem 1rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2.5px solid var(--border);
 }
 td {
   padding: .8rem 1rem; font-size: .875rem;
-  border-bottom: 1px solid #ddd; vertical-align: middle;
+  border-bottom: 1px solid var(--surface-alt); vertical-align: middle;
 }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--surface-alt); }
 
 /* ===== MISC ===== */
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: .9rem; font-weight: 500; }
-.alert { padding: .75rem 1rem; border-radius: var(--radius-sm); font-size: .875rem; border: 2px solid var(--border); }
+.alert { padding: .75rem 1rem; font-size: .875rem; border: 2.5px solid var(--border); }
 .alert-error   { background: #fecaca; color: #991b1b; }
 .alert-success { background: #bbf7d0; color: #166534; }
 
 /* ===== THEME TOGGLE ===== */
 .theme-toggle {
   display: flex; align-items: center; justify-content: center;
-  width: 100%; padding: .45rem; border-radius: var(--radius-sm);
-  border: 2px solid var(--border); background: var(--surface-alt);
+  width: 100%; padding: .45rem;
+  border: 2.5px solid var(--border); background: var(--surface-alt);
   cursor: pointer; font-size: .78rem; font-weight: 700;
   color: var(--text); gap: .5rem;
   transition: all .12s ease; box-shadow: var(--shadow-xs);
@@ -382,26 +394,21 @@ tr:hover td { background: var(--surface-alt); }
   position: relative;
 }
 .search-wrap::before {
-  content: "🔍";
+  content: '';
   position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
-  font-size: .85rem; pointer-events: none;
+  width: 14px; height: 14px; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235d564c' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+  background-size: contain;
 }
 .search-wrap .input {
   padding-left: 2.2rem;
 }
 
-/* ===== STREAK CARD ===== */
-@keyframes fireGlow {
-  0%, 100% { text-shadow: 0 0 4px rgba(255,100,0,0.3); }
-  50% { text-shadow: 0 0 12px rgba(255,100,0,0.6); }
-}
-.streak-fire { animation: fireGlow 2s ease-in-out infinite; }
-
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: #bbb; border-radius: 0; border: 1px solid var(--border); }
-::-webkit-scrollbar-thumb:hover { background: #999; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border: 1px solid var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--text); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #444; }
 
 /* ===== RESPONSIVE — MOBILE FIRST ===== */
@@ -409,19 +416,16 @@ tr:hover td { background: var(--surface-alt); }
 /* Auth pages full-width on mobile */
 @media (max-width: 520px) {
   .auth-page { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
-  .auth-card { padding: 1.5rem 1.25rem; border-radius: var(--radius); }
+  .auth-card { padding: 1.5rem 1.25rem; }
 }
 
-/* Attendance grid: 4 cols on desktop, 2 on mobile */
+/* Attendance grid: 4 cols on desktop, 2 on mobile.
+   The old span:first-child rule sized an emoji that no longer
+   exists; the label is :first-child now, so it was inflating the
+   uppercase text to 1.2rem and overflowing the 2-col grid. */
 @media (max-width: 560px) {
   .att-card { padding: .65rem .35rem; }
-  .att-card span:first-child { font-size: 1.2rem !important; }
   .att-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-}
-
-/* Day banner: wrap text gracefully */
-@media (max-width: 600px) {
-  .day-banner { font-size: .72rem !important; flex-wrap: wrap; gap: .3rem !important; }
 }
 
 /* Form: 2-col grid collapses to 1-col on mobile */
@@ -471,5 +475,5 @@ tr:hover td { background: var(--surface-alt); }
 
 /* Stat card span-2 collapses on small screens */
 @media (max-width: 400px) {
-  .stat-span-2 { grid-column: span 1 !important; }
+  .stat-span-2 { grid-column: span 1; }
 }

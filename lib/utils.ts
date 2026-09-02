@@ -31,6 +31,48 @@ export function fmtDate(dateStr: string): string {
   });
 }
 
+// ============================================================
+// Day boundaries are LOCAL, not UTC.
+//
+// A date column in Postgres stores a calendar day, and the day a
+// person means is the one on the wall behind them. toISOString()
+// converts to UTC first, so in IST (UTC+5:30) every moment before
+// 05:30 local reports yesterday's date — a user marking attendance
+// at 9am is fine, but one logging at 1am gets filed under the wrong
+// day. Build the string from the local calendar fields instead.
+// ============================================================
+export function toISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export function todayISO(): string {
-  return new Date().toISOString().split("T")[0];
+  return toISODate(new Date());
+}
+
+/** Local calendar date n days before today (n may be negative). */
+export function isoDaysAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return toISODate(d);
+}
+
+// ============================================================
+// User types — Stride isn't just for employees. Anyone with a day
+// worth tracking gets a home here, including people between jobs.
+// Values must stay in sync with the employment_type CHECK
+// constraint (see migrations/002_v2_public_product.sql).
+// ============================================================
+export const EMPLOYMENT_TYPES = [
+  { value: "FULL_TIME",  label: "Full-time",          note: "Daily work, logged" },
+  { value: "INTERN",     label: "Intern",             note: "Learn & contribute" },
+  { value: "STUDENT",    label: "Student",            note: "Track the study grind" },
+  { value: "FREELANCER", label: "Freelancer",         note: "Client work, sorted" },
+  { value: "SEEKING",    label: "Yet to be Employed", note: "Chasing the dream anyway" },
+] as const;
+
+export function employmentLabel(type: string | null): string {
+  return EMPLOYMENT_TYPES.find(t => t.value === type)?.label ?? "Tracker";
 }

@@ -27,7 +27,7 @@ export default async function AdminDashboard() {
     <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       <div>
         <div className="font-mono" style={{ fontSize: ".78rem", color: "var(--text-muted)", marginBottom: ".35rem" }}>{dateDisplay}</div>
-        <h1 className="font-title" style={{ fontSize: "2rem", fontWeight: 800 }}>Team Dashboard</h1>
+        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Team Dashboard</h1>
         <p style={{ color: "var(--text-muted)", fontSize: ".9rem", marginTop: ".25rem" }}>Today&apos;s attendance at a glance</p>
       </div>
 
@@ -39,7 +39,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "2px solid var(--border)" }}>
+        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "2.5px solid var(--border)" }}>
           <h2 style={{ fontSize: ".95rem", fontWeight: 700 }}>All Employees ({(employees ?? []).length})</h2>
         </div>
         <div className="table-wrap table-scroll">

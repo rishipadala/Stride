@@ -32,24 +32,28 @@ export default function SignupPage() {
       <div className="auth-card animate-in">
         {/* Hero section */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ fontSize: "2.5rem", marginBottom: ".5rem" }}>🕷️</div>
-          <h1 className="font-title" style={{ fontSize: "2.4rem", fontWeight: 800, marginBottom: ".35rem", letterSpacing: "-0.02em" }}>Stride</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: ".85rem", fontWeight: 500, lineHeight: 1.5 }}>
-            Every hero starts somewhere. This is your origin story! 🦸
+          <h1 style={{
+            fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
+            textTransform: "uppercase", fontWeight: 900,
+            fontSize: "2.6rem", lineHeight: .84, letterSpacing: ".012em",
+            color: "var(--text)", marginBottom: ".5rem",
+          }}>Stride</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: ".82rem", fontWeight: 500, lineHeight: 1.5 }}>
+            Every hero starts somewhere. This is your origin story.
           </p>
         </div>
 
-        {/* Fun feature callout */}
+        {/* Feature callout — ink panel, no emojis */}
         <div style={{
-          padding: ".6rem .9rem", borderRadius: "var(--radius-sm)",
-          border: "2px solid var(--border)", marginBottom: "1.25rem",
-          background: "var(--accent-dim)", fontSize: ".78rem", fontWeight: 600,
+          padding: ".7rem .9rem",
+          border: "2.5px solid var(--border)", marginBottom: "1.25rem",
+          background: "var(--accent-dim)", fontSize: ".76rem", fontWeight: 600,
           boxShadow: "var(--shadow-xs)",
         }}>
           <div style={{ display: "flex", flexDirection: "column", gap: ".3rem" }}>
-            <span>🔥 Track daily streaks &amp; build consistency</span>
-            <span>📊 Personal stats &amp; work log history</span>
-            <span>🕸️ Spidey-powered — because heroes log their wins</span>
+            <span>Track daily streaks &amp; build consistency</span>
+            <span>Personal stats &amp; work log history</span>
+            <span>Free, open source, no card required</span>
           </div>
         </div>
 
@@ -64,9 +68,9 @@ export default function SignupPage() {
             <input id="signup-password" className="input" type="password" placeholder="Min. 6 characters" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="new-password" />
             {passwordStrength && (
               <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginTop: ".25rem" }}>
-                <div style={{ flex: 1, height: 4, borderRadius: 2, background: "var(--surface-alt)", overflow: "hidden" }}>
+                <div style={{ flex: 1, height: 4, background: "var(--surface-alt)", overflow: "hidden", border: "1px solid var(--border)" }}>
                   <div style={{
-                    height: "100%", borderRadius: 2,
+                    height: "100%",
                     width: passwordStrength === "weak" ? "33%" : passwordStrength === "okay" ? "66%" : "100%",
                     background: passwordStrength === "weak" ? "#ef4444" : passwordStrength === "okay" ? "#f59e0b" : "#22c55e",
                     transition: "width .3s, background .3s",
@@ -76,7 +80,7 @@ export default function SignupPage() {
                   fontSize: ".65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em",
                   color: passwordStrength === "weak" ? "#ef4444" : passwordStrength === "okay" ? "#f59e0b" : "#22c55e",
                 }}>
-                  {passwordStrength === "weak" ? "Weak" : passwordStrength === "okay" ? "Good" : "Strong 💪"}
+                  {passwordStrength === "weak" ? "Weak" : passwordStrength === "okay" ? "Good" : "Strong"}
                 </span>
               </div>
             )}
@@ -86,12 +90,12 @@ export default function SignupPage() {
             <input id="signup-confirm" className="input" type="password" placeholder="Repeat password" value={confirm} onChange={e => setConfirm(e.target.value)} required autoComplete="new-password" />
             {confirm.length > 0 && (
               <div style={{ fontSize: ".7rem", fontWeight: 700, marginTop: ".2rem", color: password === confirm ? "#22c55e" : "#ef4444" }}>
-                {password === confirm ? "✅ Passwords match!" : "❌ Passwords don't match"}
+                {password === confirm ? "Passwords match" : "Passwords don\u2019t match"}
               </div>
             )}
           </div>
           <button id="signup-submit" className="btn btn-primary" type="submit" disabled={loading} style={{ marginTop: ".5rem", width: "100%", justifyContent: "center", padding: ".7rem" }}>
-            {loading ? <span className="spinner" /> : "🕸️ Create Account"}
+            {loading ? <span className="spinner" /> : "Create Account"}
           </button>
         </form>
         <div className="divider" />
