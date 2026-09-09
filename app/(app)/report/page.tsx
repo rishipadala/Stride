@@ -109,16 +109,35 @@ export default function ReportPage() {
 
   return (
     <>
-      {/* Print styles injected here so they live alongside the component */}
       <style>{`
         @media print {
-          body * { visibility: hidden; }
-          #stride-report, #stride-report * { visibility: visible; }
-          #stride-report { position: fixed; inset: 0; background: #fff; color: #000; padding: 2rem; }
+          /* Hide all chrome — sidebar, mobile header, and the controls card */
+          .sidebar,
+          .mobile-header,
           .no-print { display: none !important; }
-          .card, .card-sm { box-shadow: none !important; border: 1.5px solid #ccc !important; }
-          .btn { display: none !important; }
-          .stat-streak { background: #ffd831 !important; }
+
+          /* Let the report fill the page naturally — no fixed positioning */
+          main { margin-left: 0 !important; padding: 1.5rem !important; }
+
+          /* Clean surfaces */
+          body { background: #fff !important; color: #000 !important; }
+          .card, .card-sm {
+            box-shadow: none !important;
+            border: 1.5px solid #bbb !important;
+            break-inside: avoid;
+          }
+
+          /* Force background colors to print — the single most important rule */
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* Don't orphan the day timeline entries across pages */
+          #timeline-row { break-inside: avoid; }
+
+          /* Show the footer only in print */
+          .print-footer { display: block !important; }
         }
       `}</style>
 
