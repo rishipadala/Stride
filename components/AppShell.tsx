@@ -143,6 +143,7 @@ export default function AppShell({ children, profile }: { children: React.ReactN
   const navLinks = [
     { href: "/today", label: "Today", icon: <IconToday /> },
     { href: "/history", label: "History", icon: <IconHistory /> },
+    { href: "/report", label: "My Report", icon: <IconReport /> },
     { href: "/achievements", label: "Achievements", icon: <IconAchievements /> },
     { href: "/settings", label: "Settings", icon: <IconSettings /> },
   ];
