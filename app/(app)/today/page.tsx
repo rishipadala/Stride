@@ -51,6 +51,10 @@ function TodayPageInner() {
   const [logError, setLogError] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTask, setEditTask] = useState("");
+  const [editProject, setEditProject] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
   const [actionError, setActionError] = useState("");
 
   // Stats state
@@ -171,6 +175,33 @@ function TodayPageInner() {
     setLogs(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
     const { error } = await supabase.from("work_logs").update({ status: newStatus }).eq("id", id);
     if (error) { setLogs(snapshot); setActionError(`Couldn't update that entry: ${error.message}`); }
+  }
+
+  function startEditing(log: WorkLog) {
+    setConfirmDeleteId(null);
+    setEditingId(log.id);
+    setEditTask(log.task);
+    setEditProject(log.client_or_project ?? "");
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+    setEditTask("");
+    setEditProject("");
+  }
+
+  async function saveEdit(id: string) {
+    if (!editTask.trim()) return;
+    setEditLoading(true);
+    setActionError("");
+    const snapshot = logs;
+    const newTask = editTask.trim();
+    const newProject = editProject.trim() || null;
+    setLogs(prev => prev.map(l => l.id === id ? { ...l, task: newTask, client_or_project: newProject } : l));
+    const { error } = await supabase.from("work_logs").update({ task: newTask, client_or_project: newProject }).eq("id", id);
+    if (error) { setLogs(snapshot); setActionError(`Couldn't save edits: ${error.message}`); }
+    else { cancelEditing(); }
+    setEditLoading(false);
   }
 
   const [year, month, day] = selectedDate.split("-").map(Number);
@@ -358,38 +389,104 @@ function TodayPageInner() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: ".65rem" }}>
                 {logs.map(log => (
-                  <div key={log.id} style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", padding: ".85rem 1rem", background: "var(--surface-alt)", border: "2.5px solid var(--border)", boxShadow: "var(--shadow-xs)" }} className="log-entry">
-                    <span className={`status-dot ${statusDotClass(log.status as WorkLogStatus)}`} style={{ marginTop: 5 }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, marginBottom: ".25rem" }}>{log.task}</div>
-                      <div style={{ display: "flex", alignItems: "center", gap: ".5rem", flexWrap: "wrap" }}>
-                        <select
-                          className={`status-select badge-${log.status}`}
-                          aria-label={`Status for ${log.task}`}
-                          value={log.status}
-                          onChange={(e) => updateLogStatus(log.id, e.target.value as WorkLogStatus)}
-                        >
-                          {LOG_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select>
-                        {log.client_or_project && (
-                          <span style={{ fontSize: ".75rem", color: "var(--text-muted)", fontWeight: 500 }}>&middot; {log.client_or_project}</span>
-                        )}
-                      </div>
-                    </div>
-                    {confirmDeleteId === log.id ? (
-                      <div className="animate-in log-entry-actions" style={{ display: "flex", alignItems: "center", gap: ".35rem", flexShrink: 0 }}>
-                        <span style={{ fontSize: ".7rem", fontWeight: 700, color: "var(--text-muted)", whiteSpace: "nowrap" }}>Sure?</span>
-                        <button onClick={() => { deleteLog(log.id); setConfirmDeleteId(null); }} className="btn btn-danger" style={{ padding: ".25rem .5rem", fontSize: ".68rem", boxShadow: "var(--shadow-xs)" }}>
-                          Delete
-                        </button>
-                        <button onClick={() => setConfirmDeleteId(null)} className="btn btn-ghost" style={{ padding: ".25rem .5rem", fontSize: ".68rem", boxShadow: "var(--shadow-xs)" }}>
-                          Cancel
-                        </button>
-                      </div>
+                  <div key={log.id} style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", padding: ".85rem 1rem", background: "var(--surface-alt)", border: `2.5px solid ${editingId === log.id ? "var(--accent)" : "var(--border)"}`, boxShadow: "var(--shadow-xs)", transition: "border-color .15s" }} className="log-entry">
+                    <span className={`status-dot ${statusDotClass(log.status as WorkLogStatus)}`} style={{ marginTop: editingId === log.id ? 10 : 5, transition: "margin-top .15s" }} />
+
+                    {editingId === log.id ? (
+                      /* ── Inline edit form ── */
+                      <form
+                        style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: ".55rem" }}
+                        onSubmit={(e) => { e.preventDefault(); saveEdit(log.id); }}
+                        onKeyDown={(e) => { if (e.key === "Escape") cancelEditing(); }}
+                      >
+                        <input
+                          autoFocus
+                          className="input"
+                          style={{ padding: ".35rem .6rem", fontSize: ".88rem" }}
+                          value={editTask}
+                          onChange={e => setEditTask(e.target.value)}
+                          placeholder="Task description"
+                          aria-label="Edit task"
+                        />
+                        <input
+                          className="input"
+                          style={{ padding: ".35rem .6rem", fontSize: ".82rem" }}
+                          value={editProject}
+                          onChange={e => setEditProject(e.target.value)}
+                          placeholder="Client / Project (optional)"
+                          aria-label="Edit client or project"
+                        />
+                        <div style={{ display: "flex", gap: ".4rem" }}>
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={editLoading || !editTask.trim()}
+                            style={{ padding: ".28rem .65rem", fontSize: ".75rem", boxShadow: "var(--shadow-xs)" }}
+                          >
+                            {editLoading ? <span className="spinner" style={{ width: 12, height: 12 }} /> : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost"
+                            onClick={cancelEditing}
+                            style={{ padding: ".28rem .65rem", fontSize: ".75rem", boxShadow: "var(--shadow-xs)" }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
                     ) : (
-                      <button onClick={() => setConfirmDeleteId(log.id)} aria-label={`Delete "${log.task}"`} className="btn btn-danger" style={{ padding: ".3rem .6rem", fontSize: ".75rem", flexShrink: 0, boxShadow: "var(--shadow-xs)" }}>
-                        &times;
-                      </button>
+                      /* ── Read view ── */
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, marginBottom: ".25rem" }}>{log.task}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: ".5rem", flexWrap: "wrap" }}>
+                          <select
+                            className={`status-select badge-${log.status}`}
+                            aria-label={`Status for ${log.task}`}
+                            value={log.status}
+                            onChange={(e) => updateLogStatus(log.id, e.target.value as WorkLogStatus)}
+                          >
+                            {LOG_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                          </select>
+                          {log.client_or_project && (
+                            <span style={{ fontSize: ".75rem", color: "var(--text-muted)", fontWeight: 500 }}>&middot; {log.client_or_project}</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ── Action buttons (only in read view) ── */}
+                    {editingId !== log.id && (
+                      confirmDeleteId === log.id ? (
+                        <div className="animate-in log-entry-actions" style={{ display: "flex", alignItems: "center", gap: ".35rem", flexShrink: 0 }}>
+                          <span style={{ fontSize: ".7rem", fontWeight: 700, color: "var(--text-muted)", whiteSpace: "nowrap" }}>Sure?</span>
+                          <button onClick={() => { deleteLog(log.id); setConfirmDeleteId(null); }} className="btn btn-danger" style={{ padding: ".25rem .5rem", fontSize: ".68rem", boxShadow: "var(--shadow-xs)" }}>
+                            Delete
+                          </button>
+                          <button onClick={() => setConfirmDeleteId(null)} className="btn btn-ghost" style={{ padding: ".25rem .5rem", fontSize: ".68rem", boxShadow: "var(--shadow-xs)" }}>
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", alignItems: "center", gap: ".3rem", flexShrink: 0 }}>
+                          <button
+                            onClick={() => startEditing(log)}
+                            aria-label={`Edit "${log.task}"`}
+                            className="btn btn-ghost"
+                            style={{ padding: ".3rem .55rem", fontSize: ".75rem", boxShadow: "var(--shadow-xs)", lineHeight: 1 }}
+                          >
+                            ✎
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(log.id)}
+                            aria-label={`Delete "${log.task}"`}
+                            className="btn btn-danger"
+                            style={{ padding: ".3rem .6rem", fontSize: ".75rem", boxShadow: "var(--shadow-xs)" }}
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      )
                     )}
                   </div>
                 ))}
