@@ -232,26 +232,6 @@ export default function ReportPage() {
             </section>
           )}
 
-          {/* Work output distribution */}
-          {Object.keys(logCounts).length > 0 && (
-            <section className="pd-section">
-              <h2 className="pd-h2">Work output</h2>
-              <table className="pd-table">
-                <thead>
-                  <tr><th>Status</th><th className="pd-num">Items</th><th className="pd-num">Share</th><th className="pd-barhead">Distribution</th></tr>
-                </thead>
-                <tbody>
-                  {Object.entries(logCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([s, c]) => <DistRow key={s} status={s} count={c} total={logs.length} />)}
-                </tbody>
-                <tfoot>
-                  <tr><td>Total logged</td><td className="pd-num">{logs.length}</td><td className="pd-num">100%</td><td /></tr>
-                </tfoot>
-              </table>
-            </section>
-          )}
-
           {/* Projects */}
           {projects.length > 0 && (
             <section className="pd-section">
@@ -283,10 +263,10 @@ export default function ReportPage() {
               <table className="pd-table pd-log">
                 <thead>
                   <tr>
-                    <th style={{ width: "16%" }}>Date</th>
-                    <th style={{ width: "14%" }}>Attendance</th>
-                    <th>Task</th>
-                    <th style={{ width: "18%" }}>Project</th>
+                    <th style={{ width: "15%" }}>Date</th>
+                    <th style={{ width: "13%" }}>Attendance</th>
+                    <th style={{ width: "40%" }}>Task</th>
+                    <th style={{ width: "19%" }}>Project</th>
                     <th style={{ width: "13%" }}>Status</th>
                   </tr>
                 </thead>
@@ -597,18 +577,28 @@ export default function ReportPage() {
             text-transform: uppercase; color: #7b8494;
           }
 
-          /* ---- tables ---- */
-          .pd-table { width: 100%; border-collapse: collapse; }
+          /* ---- tables ----
+             Cells carry padding on BOTH sides. With padding-left:0 the
+             text in a column sat flush against the rule to its left,
+             which read as a misalignment even though the column edges
+             were correct. */
+          .pd-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
           .pd-table th {
             font-size: 6.8pt; font-weight: 700; letter-spacing: .11em;
             text-transform: uppercase; color: #7b8494;
-            text-align: left; padding: 0 6pt 4pt 0;
+            text-align: left; padding: 0 7pt 4pt 7pt;
             border-bottom: .5pt solid #c8cdd6;
+            vertical-align: bottom;
           }
+          .pd-table th:first-child,
+          .pd-table td:first-child { padding-left: 0; }
+          .pd-table th:last-child,
+          .pd-table td:last-child { padding-right: 0; }
           .pd-table td {
-            padding: 4.5pt 6pt 4.5pt 0;
+            padding: 5pt 7pt;
             border-bottom: .5pt solid #eceef2;
             vertical-align: top;
+            overflow-wrap: break-word;
           }
           .pd-table tfoot td {
             border-top: .75pt solid #16181d; border-bottom: 0;
@@ -636,18 +626,33 @@ export default function ReportPage() {
           /* Header repeats on every page the table spills onto. */
           .pd-log thead { display: table-header-group; }
           .pd-day { break-inside: avoid; page-break-inside: avoid; }
-          .pd-day td { border-bottom: .5pt solid #eceef2; }
+          /* The rule under a day closes the whole day, not each task
+             inside it — internal task rows are separated by space, so
+             a multi-task day reads as one block. */
+          .pd-day td { border-bottom: 0; }
+          .pd-day tr:last-child td { border-bottom: .5pt solid #eceef2; }
+          /* Date and Attendance are rowspanned across a day's tasks.
+             Left as vertical-align:top they floated against the first
+             task; the explicit rules keep every column's first line on
+             one baseline. */
           .pd-date {
             font-weight: 600; white-space: nowrap;
             border-right: .5pt solid #eceef2;
+            vertical-align: top;
           }
-          .pd-att { font-size: 8.6pt; border-right: .5pt solid #eceef2; }
+          .pd-att {
+            border-right: .5pt solid #eceef2;
+            vertical-align: top;
+          }
           .pd-note {
             display: block; margin-top: 2pt;
             font-size: 7.6pt; color: #7b8494; font-style: italic;
           }
+          /* Sits on the same first baseline as the task text beside it
+             rather than riding high off its own smaller size. */
           .pd-status {
-            font-size: 7.4pt; font-weight: 700;
+            display: inline-block;
+            font-size: 7.4pt; font-weight: 700; line-height: 1.45;
             letter-spacing: .07em; text-transform: uppercase;
           }
           .pd-none { font-style: italic; }
