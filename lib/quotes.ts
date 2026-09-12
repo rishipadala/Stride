@@ -95,6 +95,27 @@ export function getQuote(context: QuoteContext = "general"): string {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+/**
+ * The label on the caption tab above each quote.
+ *
+ * Comic captions announce where you are in the story — "MEANWHILE",
+ * "LATER THAT DAY", "END OF ISSUE" — so these do the same, and the
+ * tab ends up carrying real information: which slice of the day or
+ * which moment in the app you're looking at.
+ */
+export const KICKER: Record<QuoteContext, string> = {
+  morning:     "Meanwhile, in Queens",
+  afternoon:   "Later that day",
+  evening:     "As night falls",
+  streak:      "Spider-sense",
+  comeback:    "Previously",
+  friday:      "End of issue",
+  achievement: "Thwip!",
+  login:       "Meanwhile",
+  landing:     "The amazing",
+  general:     "Spider-sense",
+};
+
 /** Deterministic pick from a seed — SSR-safe (server & client agree). */
 export function pickDeterministic(context: QuoteContext, seed: number): string {
   const pool = QUOTES[context] ?? QUOTES.general;
@@ -107,4 +128,17 @@ export function contextForHour(hour: number): QuoteContext {
   if (hour < 12) return "morning";
   if (hour < 17) return "afternoon";
   return "evening";
+}
+
+/**
+ * Context for a specific moment. Friday outranks the clock — it's the
+ * one weekday the app already has its own voice for. Sunday hour 0–23
+ * falls through to the time of day like everything else.
+ *
+ * @param hour     0–23
+ * @param dayIndex JS getDay(): 0 = Sunday
+ */
+export function contextForMoment(hour: number, dayIndex: number): QuoteContext {
+  if (dayIndex === 5 && hour >= 12) return "friday";
+  return contextForHour(hour);
 }

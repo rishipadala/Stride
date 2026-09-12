@@ -6,9 +6,9 @@ import Link from "next/link";
 // doesn't exist, or the page becomes a username oracle.
 export default function ShareNotFound() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--shell-pad)" }}>
       <div className="card animate-in" style={{ maxWidth: 420, textAlign: "center", display: "flex", flexDirection: "column", gap: ".9rem" }}>
-        <h1 className="font-title" style={{ fontSize: "2rem", fontWeight: 900, lineHeight: .94, margin: 0 }}>
+        <h1 className="font-title page-title" style={{ margin: 0 }}>
           Nothing here
         </h1>
         <p style={{ fontSize: ".9rem", color: "var(--text-muted)", margin: 0, lineHeight: 1.6 }}>

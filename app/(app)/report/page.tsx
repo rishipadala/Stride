@@ -317,15 +317,15 @@ export default function ReportPage() {
       )}
 
       {/* ================= ON-SCREEN VIEW ================= */}
-      <div className="screen-only animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+      <div className="screen-only stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
         <div>
-          <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>My Report</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: ".9rem", marginTop: ".3rem" }}>Weekly, monthly, or a custom date range — then export as PDF.</p>
+          <h1 className="font-title page-title">My Report</h1>
+          <p className="page-sub" style={{ marginTop: ".3rem" }}>Weekly, monthly, or a custom date range — then export as PDF.</p>
         </div>
 
         {/* Controls */}
         <div className="card-sm" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
+          <div className="btn-row-stack" style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
             {(["week", "month", "custom"] as Period[]).map(p => (
               <button
                 key={p}
@@ -339,15 +339,15 @@ export default function ReportPage() {
           </div>
 
           {period !== "custom" && (
-            <div style={{ display: "flex", alignItems: "center", gap: ".75rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: ".75rem", flexWrap: "wrap", justifyContent: "center" }}>
               <button className="btn btn-ghost" style={{ padding: ".35rem .75rem", fontSize: ".8rem" }} onClick={periodPrev}>← Prev</button>
-              <span style={{ fontSize: ".88rem", fontWeight: 600, minWidth: 200, textAlign: "center" }}>{label}</span>
+              <span style={{ fontSize: ".88rem", fontWeight: 600, minWidth: 0, flex: "1 1 140px", textAlign: "center" }}>{label}</span>
               <button className="btn btn-ghost" style={{ padding: ".35rem .75rem", fontSize: ".8rem" }} onClick={periodNext} disabled={offset >= 0}>Next →</button>
             </div>
           )}
 
           {period === "custom" && (
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div className="history-filters" style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
               <div className="form-group" style={{ flex: 1, minWidth: 140 }}>
                 <label className="input-label">From</label>
                 <input className="input" type="date" value={customFrom} max={customTo} onChange={e => setCustomFrom(e.target.value)} />
@@ -446,8 +446,8 @@ export default function ReportPage() {
                     const att = attByDate.get(date);
                     const dayLogs = logsByDate[date] ?? [];
                     return (
-                      <div key={date} style={{ display: "flex", gap: "1rem", padding: "1rem 1.5rem", borderBottom: i < allDates.length - 1 ? "1.5px solid var(--surface-alt)" : "none", alignItems: "flex-start" }}>
-                        <div style={{ minWidth: 90, flexShrink: 0 }}>
+                      <div key={date} className="rp-day" style={{ display: "flex", gap: "1rem", padding: "1rem 1.5rem", borderBottom: i < allDates.length - 1 ? "1.5px solid var(--surface-alt)" : "none", alignItems: "flex-start" }}>
+                        <div className="rp-day-meta" style={{ minWidth: 90, flexShrink: 0 }}>
                           <div className="font-mono" style={{ fontSize: ".75rem", fontWeight: 700, color: "var(--text-muted)" }}>{fmtDate(date)}</div>
                           {att && (
                             <span style={{ display: "inline-block", marginTop: ".35rem", background: STATUS_BG[att.status] ?? "#eee", color: STATUS_FG[att.status] ?? "#333", fontSize: ".65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em", padding: ".2rem .45rem", border: "1.5px solid var(--border)" }}>
@@ -487,6 +487,20 @@ export default function ReportPage() {
       <style>{`
         /* The document never shows on screen. */
         .pdf-doc { display: none; }
+
+        /* Daily Record rows put the date in a fixed 90px column beside
+           the tasks. On a 360px phone that column plus the gap plus
+           1.5rem of side padding leaves barely 20 characters for the
+           task itself, so past this point the date sits above its items
+           as a heading instead of beside them. */
+        @media (max-width: 520px) {
+          .rp-day { flex-direction: column; gap: .55rem !important; padding: .9rem 1rem !important; }
+          .rp-day-meta {
+            min-width: 0 !important; display: flex; align-items: center;
+            flex-wrap: wrap; gap: .5rem;
+          }
+          .rp-day-meta > span { margin-top: 0 !important; }
+        }
 
         @media print {
           @page { size: A4; margin: 15mm 14mm 14mm; }

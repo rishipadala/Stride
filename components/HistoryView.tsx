@@ -190,8 +190,8 @@ export default function HistoryView({ userId, employeeName, hideHeader }: Props)
     <div className="hv">
       {!hideHeader && (
         <div>
-          <h1 className="font-title hv-h1">{employeeName ?? "History"}</h1>
-          <p className="hv-sub">
+          <h1 className="font-title page-title">{employeeName ?? "History"}</h1>
+          <p className="page-sub">
             {employeeName ? "Full attendance and work log history" : "Your attendance and work log over time"}
           </p>
         </div>
@@ -357,8 +357,10 @@ export default function HistoryView({ userId, employeeName, hideHeader }: Props)
 
       <style>{`
         .hv { display: flex; flex-direction: column; gap: 1.5rem; }
-        .hv-h1 { font-size: 2.2rem; font-weight: 900; line-height: .94; }
-        .hv-sub { color: var(--text-muted); font-size: .9rem; }
+        /* The heading pair used to be local at a flat 2.2rem, so an
+           employee with a long name overflowed on a phone while every
+           other page's title shrank. It uses the shared .page-title /
+           .page-sub now. */
 
         /* ----- controls ----- */
         .hv-controls {

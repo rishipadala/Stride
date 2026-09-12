@@ -138,6 +138,21 @@ export default function AppShell({ children, profile }: { children: React.ReactN
   // leaves the sidebar and its scrim covering the page you asked for.
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
+  // While the drawer is open the page behind it must not scroll. On
+  // iOS especially, a swipe over the scrim otherwise moves the page
+  // underneath and the drawer appears to slide about.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
   const isActive = (href: string) => pathname === href || (href !== "/today" && pathname.startsWith(href));
 
   const navLinks = [
@@ -165,6 +180,7 @@ export default function AppShell({ children, profile }: { children: React.ReactN
           type="button"
           aria-label="Close menu"
           onClick={() => setMenuOpen(false)}
+          className="app-scrim"
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 40, border: "none", padding: 0, cursor: "pointer" }}
         />
       )}
@@ -173,9 +189,9 @@ export default function AppShell({ children, profile }: { children: React.ReactN
       <aside id="app-sidebar" style={{
         width: 230, flexShrink: 0, background: "var(--surface)", borderRight: "2.5px solid var(--border)",
         display: "flex", flexDirection: "column", padding: "1.5rem 0.875rem", gap: "0.25rem",
-        position: "fixed", top: 0, bottom: 0, left: 0, zIndex: 50,
+        position: "fixed", top: 0, bottom: 0, left: 0, zIndex: 50, overflowY: "auto",
         transform: menuOpen ? "translateX(0)" : undefined,
-        transition: "transform 0.25s ease, background 0.2s, border-color 0.2s",
+        transition: "transform var(--dur-slow) var(--ease-out), background var(--dur) var(--ease), border-color var(--dur) var(--ease)",
       }}
       className="sidebar">
         {/* Wordmark — Big Shoulders Display, matching Landing */}
@@ -277,21 +293,28 @@ export default function AppShell({ children, profile }: { children: React.ReactN
       </header>
 
       {/* Main content */}
-      <main style={{ flex: 1, marginLeft: 230, padding: "2rem", maxWidth: "100%", overflowX: "hidden" }}>
+      <main style={{ flex: 1, marginLeft: 230, padding: "var(--shell-pad)", maxWidth: "100%", minWidth: 0 }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           {children}
         </div>
       </main>
 
       <style>{`
+        @keyframes scrimIn { from { opacity: 0; } to { opacity: 1; } }
+        .app-scrim { animation: scrimIn var(--dur) var(--ease-out); }
+
         @media (max-width: 768px) {
           .sidebar { transform: translateX(-100%); }
-          main { margin-left: 0 !important; padding: 1rem !important; padding-top: 4.5rem !important; }
+          main {
+            margin-left: 0 !important;
+            /* Clear the fixed 56px bar, then the shell's own gutter. */
+            padding-top: calc(56px + var(--shell-pad)) !important;
+          }
           .mobile-header {
             display: flex !important; align-items: center; justify-content: space-between;
             position: fixed; top: 0; left: 0; right: 0; height: 56px;
             background: var(--surface); border-bottom: 2.5px solid var(--border);
-            padding: 0 1rem; z-index: 30;
+            padding: 0 var(--shell-pad); z-index: 30;
           }
         }
       `}</style>

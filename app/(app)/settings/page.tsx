@@ -84,10 +84,10 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.75rem", maxWidth: 520 }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem", maxWidth: 520 }}>
       <div>
-        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Settings</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>Update your profile information</p>
+        <h1 className="font-title page-title">Settings</h1>
+        <p className="page-sub">Update your profile information</p>
       </div>
 
       <div className="card">

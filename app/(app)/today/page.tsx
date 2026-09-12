@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { statusDotClass, statusLabel, todayISO, toISODate } from "@/lib/utils";
 import { computeStats, type AttLike } from "@/lib/achievements";
 import { webBurstFrom } from "@/lib/webBurst";
+import { getQuote, contextForMoment, type QuoteContext } from "@/lib/quotes";
+import Quip from "@/components/Quip";
 
 type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE";
 type WorkLogStatus = "DONE" | "IN_PROGRESS" | "WAITING_ON_CLIENT" | "TO_IMPLEMENT" | "BLOCKED";
@@ -213,38 +215,32 @@ function TodayPageInner() {
   // gives the server (UTC) and the browser (IST) different greetings
   // and weekday names, which React flags as a hydration mismatch.
   const [nowParts, setNowParts] = useState<{ hour: number; dayIndex: number } | null>(null);
+  // The day's line. It used to be a local seven-string array keyed by
+  // weekday, duplicating copy that already lived in lib/quotes.ts and
+  // rotating on a seven-day cycle you'd have memorised by Thursday.
+  // Same clock read now picks the context and the quotes engine picks
+  // the line, so it varies by time of day and doesn't repeat weekly.
+  const [quip, setQuip] = useState<{ text: string; ctx: QuoteContext } | null>(null);
   useEffect(() => {
     const n = new Date();
     setNowParts({ hour: n.getHours(), dayIndex: n.getDay() });
+    const ctx = contextForMoment(n.getHours(), n.getDay());
+    setQuip({ text: getQuote(ctx), ctx });
   }, []);
 
   const greeting = !nowParts ? "" : nowParts.hour < 12 ? "Good morning" : nowParts.hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = userName ? userName.split(" ")[0] : null;
 
-  /* A quiet Spidey aside, not a coloured announcement. This used to
-     be a bordered box that recoloured itself by weekday — five hues
-     spent restating the day the line beside it already named. */
-  const DAY_ASIDE = [
-    "Even heroes rest. Recharge for the week ahead.",
-    "With great power comes great productivity.",
-    "Anyone can be a hero. Today it's your turn.",
-    "Midweek hustle — keep swinging.",
-    "Almost Friday — the finish line is in sight.",
-    "Friday — another week in the books.",
-    "Half-day vibes — take it easy.",
-  ];
-  const dayAside = nowParts ? DAY_ASIDE[nowParts.dayIndex] : "";
-
   const streakMsg = streak === 0 ? "Start your streak today" : streak < 5 ? "Keep it going" : streak < 15 ? "You're on fire" : "Unstoppable";
 
   return (
-    <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       {/* ===== HEADER =====
           Was four stacked blocks: greeting, a colour-coded day banner,
           a mono date line, then the H1. Three of them restated the same
           day in a different hue. Now it reads top-down as who you are,
           where you are, and one aside, in one ink colour. */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+      <div className="page-head">
         <div>
           {cameFromHistory && (
             <div style={{ marginBottom: ".6rem" }}>
@@ -258,19 +254,24 @@ function TodayPageInner() {
               {greeting}{firstName ? `, ${firstName}` : ""}
             </div>
           )}
-          <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>
+          <h1 className="font-title page-title">
             {isToday ? "Today’s Log" : "Daily Log"}
           </h1>
-          <div className="font-mono" style={{ fontSize: ".76rem", color: "var(--text-muted)", marginTop: ".45rem", maxWidth: "54ch", lineHeight: 1.5 }}>
+          <div className="font-mono" style={{ fontSize: ".76rem", color: "var(--text-muted)", marginTop: ".45rem", lineHeight: 1.5 }}>
             {dateDisplay}
-            {isToday && dayAside && <span style={{ opacity: .7 }}> &middot; {dayAside}</span>}
           </div>
         </div>
-        <div className="form-group" style={{ minWidth: 160 }}>
+        <div className="form-group">
           <label className="input-label" htmlFor="date-picker" style={{ marginBottom: "0.2rem" }}>Select Date</label>
           <input id="date-picker" type="date" className="input" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} min={startDate ?? undefined} max={today} style={{ padding: ".45rem .75rem" }} />
         </div>
       </div>
+
+      {/* Only on today — a caption about the morning makes no sense
+          sitting over a Tuesday you're back-filling from History. */}
+      {isToday && quip && (
+        <Quip key={quip.text} quote={quip.text} context={quip.ctx} plate={streak >= 3} />
+      )}
 
       {pageLoading ? (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "30vh" }}>
@@ -389,8 +390,8 @@ function TodayPageInner() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: ".65rem" }}>
                 {logs.map(log => (
-                  <div key={log.id} style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", padding: ".85rem 1rem", background: "var(--surface-alt)", border: `2.5px solid ${editingId === log.id ? "var(--accent)" : "var(--border)"}`, boxShadow: "var(--shadow-xs)", transition: "border-color .15s" }} className="log-entry">
-                    <span className={`status-dot ${statusDotClass(log.status as WorkLogStatus)}`} style={{ marginTop: editingId === log.id ? 10 : 5, transition: "margin-top .15s" }} />
+                  <div key={log.id} style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", padding: ".85rem 1rem", background: "var(--surface-alt)", border: `2.5px solid ${editingId === log.id ? "var(--accent)" : "var(--border)"}`, boxShadow: "var(--shadow-xs)", transition: "border-color var(--dur) var(--ease)" }} className="log-entry">
+                    <span className={`status-dot ${statusDotClass(log.status as WorkLogStatus)}`} style={{ marginTop: editingId === log.id ? 10 : 5, transition: "margin-top var(--dur) var(--ease)" }} />
 
                     {editingId === log.id ? (
                       /* ── Inline edit form ── */

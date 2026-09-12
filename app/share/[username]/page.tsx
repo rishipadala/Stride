@@ -115,7 +115,7 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
 
   return (
     <div className="pp">
-      <div className="pp-inner animate-in">
+      <div className="pp-inner stagger">
         <header className="pp-top">
           <Link href="/" className="pp-brand font-title">Stride</Link>
           {profile.username && <span className="pp-handle font-mono">@{profile.username}</span>}
@@ -199,7 +199,9 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
 
         .pp-h2 { font-size: 1.35rem; font-weight: 900; margin: 0 0 .85rem; }
         .pp-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .9rem; }
-        .pp-badge { display: flex; flex-direction: column; gap: .45rem; padding: 1rem .9rem; }
+        .pp-badge { display: flex; flex-direction: column; gap: .45rem; padding: 1rem .9rem;
+          transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
+        .pp-badge:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
         .pp-badge-icon {
           width: 42px; height: 42px;
           display: flex; align-items: center; justify-content: center;
@@ -213,9 +215,19 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
         .pp-foot-link { color: var(--text); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--accent); }
 
         @media (max-width: 460px) {
+          .pp { padding: 1.4rem 1rem 3rem; }
           .pp-name { font-size: 1.7rem; }
           .pp-avatar { width: 56px; height: 56px; font-size: 1.25rem; }
           .pp-stat-value { font-size: 2.6rem; }
+          .pp-stat { padding: 1.1rem 1rem; }
+        }
+
+        /* Two stat cards side by side stop working once each one is
+           under ~140px: "Days showed up" starts breaking across three
+           lines beside a 2.6rem number. One per row below this. */
+        @media (max-width: 360px) {
+          .pp-stats { grid-template-columns: 1fr; }
+          .pp-badges { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>

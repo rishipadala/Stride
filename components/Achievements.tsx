@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { getQuote } from "@/lib/quotes";
+import { getQuote, type QuoteContext } from "@/lib/quotes";
+import Quip from "@/components/Quip";
 import {
   computeStats, evaluate, TIER_COLOR,
   type AttLike, type LogLike, type EvaluatedAchievement,
@@ -13,7 +14,10 @@ export default function Achievements() {
   const [items, setItems] = useState<EvaluatedAchievement[] | null>(null);
   const [unlockedAt, setUnlockedAt] = useState<Record<string, string>>({});
   const [freshCodes, setFreshCodes] = useState<Set<string>>(new Set());
-  const [quote, setQuote] = useState("Anyone can be a hero. Today, it's your turn.");
+  const [quip, setQuip] = useState<{ text: string; ctx: QuoteContext }>({
+    text: "Anyone can be a hero. Today, it's your turn.",
+    ctx: "general",
+  });
 
   const load = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -52,8 +56,8 @@ export default function Achievements() {
 
   useEffect(() => {
     if (!items) return;
-    const any = items.some(a => a.unlocked);
-    setQuote(getQuote(any ? "achievement" : "general"));
+    const ctx: QuoteContext = items.some(a => a.unlocked) ? "achievement" : "general";
+    setQuip({ text: getQuote(ctx), ctx });
   }, [items]);
 
   if (!items) {
@@ -72,10 +76,10 @@ export default function Achievements() {
   const nextUp = [...locked].sort((a, b) => b.pct - a.pct)[0];
 
   return (
-    <div className="ac" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div className="ac stagger" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       <div>
-        <h1 className="font-title" style={{ fontSize: "2rem", fontWeight: 700 }}>Achievements</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>
+        <h1 className="font-title page-title">Achievements</h1>
+        <p className="page-sub">
           Badges you&apos;ve earned by showing up. With great consistency comes great rewards.
         </p>
       </div>
@@ -101,8 +105,16 @@ export default function Achievements() {
             Closest: <strong>{nextUp.iconText} {nextUp.name}</strong> — {nextUp.current}/{nextUp.target}
           </div>
         )}
-        <div className="ac-quote font-mono">&ldquo;{quote}&rdquo;</div>
       </div>
+
+      {/* Outside the card on purpose — .card clips its overflow, which
+          would shear off the caption tab and the balloon's tail. */}
+      <Quip
+        key={quip.text}
+        quote={quip.text}
+        context={quip.ctx}
+        plate={quip.ctx === "achievement"}
+      />
 
       {/* Unlocked */}
       {unlocked.length > 0 && (
@@ -167,20 +179,20 @@ export default function Achievements() {
         }
         .ac-ring span { font-size: .72rem; font-weight: 700; }
         .ac-track { height: 14px; background: var(--surface-alt); border: 2.5px solid var(--border); overflow: hidden; }
-        .ac-fill { height: 100%; background: var(--accent); transition: width .5s ease; }
+        .ac-fill { height: 100%; background: var(--accent); transition: width .5s var(--ease-out); }
         .ac-next { font-size: .8rem; color: var(--text-muted); }
         .ac-next strong { color: var(--text); }
-        .ac-quote { font-size: .78rem; font-style: italic; color: var(--text-muted); text-align: center; padding-top: .8rem; border-top: 2.5px solid var(--border); }
 
         .ac-h2 { font-size: .95rem; font-weight: 700; margin-bottom: .85rem; }
         .ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .9rem; }
         .ac-badge {
           position: relative; display: flex; flex-direction: column; gap: .4rem;
           padding: 1.1rem 1rem; background: var(--surface);
-          border: 2.5px solid var(--border);
-          box-shadow: var(--shadow); transition: transform .14s ease;
+          border: 2.5px solid var(--border); min-width: 0;
+          box-shadow: var(--shadow);
+          transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
         }
-        .ac-badge:hover { transform: translate(-2px, -2px); }
+        .ac-badge:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
         .ac-badge.locked { opacity: .72; box-shadow: var(--shadow-xs); }
         .ac-emoji {
           width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
@@ -207,11 +219,21 @@ export default function Achievements() {
           letter-spacing: .06em; padding: .2rem .4rem;
           border: 2.5px solid var(--border);
         }
-        .ac-badge.fresh { animation: ac-pop .5s ease; }
+        .ac-badge.fresh { animation: ac-pop .5s var(--ease); }
         @keyframes ac-pop {
           0% { transform: scale(.9); }
           60% { transform: scale(1.04); }
           100% { transform: scale(1); }
+        }
+
+        /* Below ~470px a 210px minimum leaves an awkward half-column of
+           dead space, so the grid goes single-file and the counter stops
+           competing with the ring for width. */
+        @media (max-width: 470px) {
+          .ac-grid { grid-template-columns: 1fr; }
+          .ac-count { font-size: 2rem; }
+          .ac-ring { width: 56px; height: 56px; }
+          .ac-badge { padding: .95rem .85rem; }
         }
       `}</style>
     </div>

@@ -1,5 +1,6 @@
 ﻿import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import HistoryView from "@/components/HistoryView";
 
 export default async function EmployeeHistoryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,11 +14,14 @@ export default async function EmployeeHistoryPage({ params }: { params: Promise<
   if (!emp) redirect("/admin/employees");
 
   return (
-    <div>
+    <div className="stagger">
       <div style={{ marginBottom: "1.5rem" }}>
-        <a href="/admin/employees" style={{ color: "var(--text-muted)", fontSize: ".85rem", textDecoration: "none" }}>
+        {/* next/link, not a bare <a> — going back to the list was a
+            full document reload, which on this shell means the sidebar
+            and the whole page repaint from white. */}
+        <Link href="/admin/employees" style={{ color: "var(--text-muted)", fontSize: ".85rem", textDecoration: "none" }}>
           &larr; Back to Employees
-        </a>
+        </Link>
       </div>
       <HistoryView userId={id} employeeName={emp.full_name} />
     </div>

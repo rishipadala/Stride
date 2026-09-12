@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { statusDotClass, statusLabel, fmtDate } from "@/lib/utils";
+import { statusLabel } from "@/lib/utils";
 
 
 const STATUS_COLORS: Record<string, string> = {
@@ -52,13 +53,13 @@ export default function ReportPage() {
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       <div>
-        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Team Report</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>Aggregate stats across the entire team</p>
+        <h1 className="font-title page-title">Team Report</h1>
+        <p className="page-sub">Aggregate stats across the entire team</p>
       </div>
 
-      <div className="card-sm" style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-end" }}>
+      <div className="card-sm history-filters" style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-end" }}>
         <div className="form-group" style={{ flex: 1, minWidth: 140 }}>
           <label className="input-label">From</label>
           <input id="rep-from" className="input" type="date" value={from} onChange={e => setFrom(e.target.value)} />
@@ -113,7 +114,7 @@ export default function ReportPage() {
             <div style={{ padding: "1.25rem 1.5rem", borderBottom: "2.5px solid var(--border)" }}>
               <h2 style={{ fontSize: ".95rem", fontWeight: 600 }}>Per-Employee Summary</h2>
             </div>
-            <div className="table-wrap">
+            <div className="table-wrap table-scroll">
               <table>
                 <thead><tr><th>Employee</th><th>Type</th><th>Days Present/WFH</th><th>Work Log Entries</th><th></th></tr></thead>
                 <tbody>
@@ -123,7 +124,7 @@ export default function ReportPage() {
                       <td style={{ fontSize: ".8rem", color: "var(--text-muted)" }}>{emp.employment_type === "INTERN" ? "Intern" : "Full-time"}</td>
                       <td><span className="font-mono" style={{ color: "var(--present)" }}>{emp.present}</span></td>
                       <td><span className="font-mono">{emp.totalLogs}</span></td>
-                      <td><a href={`/admin/employees/${emp.id}`} className="btn btn-ghost" style={{ fontSize: ".78rem", padding: ".3rem .7rem" }}>Details →</a></td>
+                      <td><Link href={`/admin/employees/${emp.id}`} className="btn btn-ghost" style={{ fontSize: ".78rem", padding: ".3rem .7rem" }}>Details →</Link></td>
                     </tr>
                   ))}
                 </tbody>

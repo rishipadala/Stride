@@ -14,10 +14,10 @@ export default function HistoryTabs() {
   const [tab, setTab] = useState<Tab>("digest");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       <div>
-        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>History</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>
+        <h1 className="font-title page-title">History</h1>
+        <p className="page-sub">
           {tab === "digest"
             ? "Your week and month, summed up"
             : "Your attendance and work log over time"}
@@ -74,7 +74,8 @@ export default function HistoryTabs() {
           color: var(--text-muted); background: var(--surface-alt);
           border: 2.5px solid var(--border); border-bottom: none;
           text-transform: uppercase; letter-spacing: .04em;
-          margin-bottom: -2.5px; transition: background .15s, color .15s;
+          margin-bottom: -2.5px;
+          transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
         }
         .ht-tab:hover { color: var(--text); }
         /* The active tab was floated up on a 2px -2px shadow — an offset
@@ -83,6 +84,13 @@ export default function HistoryTabs() {
            plate now, the same way it is in the sidebar. */
         .ht-tab.active { background: var(--accent); color: #000; }
         [role="tabpanel"]:focus { outline: none; }
+
+        /* Two tabs, so on a phone they simply split the width rather
+           than huddling at the left edge with dead rule beside them. */
+        @media (max-width: 560px) {
+          .ht-tabs { gap: .35rem; }
+          .ht-tab { flex: 1; padding: .55rem .5rem; text-align: center; }
+        }
       `}</style>
     </div>
   );

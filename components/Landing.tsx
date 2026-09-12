@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getQuote } from "@/lib/quotes";
+import { getQuote, KICKER } from "@/lib/quotes";
 
 /* Set NEXT_PUBLIC_SOURCE_URL to the public repo and the footer grows a
    "Source" link. Left unset, the link is omitted entirely rather than
@@ -566,6 +566,7 @@ export default function Landing() {
             {SOURCE_URL && <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">Source</a>}
           </nav>
           <div className="cb-quote-wrap">
+            <span className="cb-quote-kicker">{KICKER.landing}</span>
             <p className="cb-quote">{quote}</p>
           </div>
         </div>
@@ -979,34 +980,55 @@ export default function Landing() {
         }
         .cb-footer-nav a:hover { border-bottom-color: var(--cb-red); }
         /* Speech-tail quote bubble — the tail points left toward the
-           footer wordmark, like a quip from the spider. */
+           footer wordmark, like a quip from the spider. It used to be
+           set in .72rem italic mono in --cb-muted, which is the same
+           treatment as the legal colophon three lines below it; the
+           line the page closes on was quieter than the disclaimer.
+           Matches the app's .quip panel now: ink rule, hard shadow,
+           red caption tab, the words at reading size. */
         .cb-quote-wrap {
           position: relative;
-          background: var(--cb-pulp);
-          border: 2px solid var(--cb-line);
-          padding: 12px 14px;
-          max-width: 30ch;
+          background: var(--cb-panel);
+          border: 2.5px solid var(--cb-line);
+          box-shadow: 4px 4px 0 0 var(--cb-line);
+          padding: 15px 16px 14px;
+          margin-top: 11px;
+          /* Clears the colophon's rule below — the 4px hard shadow was
+             landing directly on it. */
+          margin-bottom: 10px;
+          max-width: 32ch;
         }
         .cb-quote-wrap::before {
           content: '';
-          position: absolute; left: -10px; top: 14px;
+          position: absolute; left: -12px; top: 22px;
           width: 0; height: 0;
-          border-top: 6px solid transparent;
-          border-bottom: 6px solid transparent;
-          border-right: 10px solid var(--cb-line);
+          border-top: 7px solid transparent;
+          border-bottom: 7px solid transparent;
+          border-right: 12px solid var(--cb-line);
         }
         .cb-quote-wrap::after {
           content: '';
-          position: absolute; left: -7px; top: 14px;
+          position: absolute; left: -8px; top: 22px;
           width: 0; height: 0;
-          border-top: 6px solid transparent;
-          border-bottom: 6px solid transparent;
-          border-right: 10px solid var(--cb-pulp);
+          border-top: 7px solid transparent;
+          border-bottom: 7px solid transparent;
+          border-right: 12px solid var(--cb-panel);
+        }
+        .cb-quote-kicker {
+          position: absolute; top: -11px; left: 12px;
+          background: var(--cb-red); color: #fff;
+          border: 2px solid var(--cb-line);
+          font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+          font-size: .74rem; font-weight: 900;
+          letter-spacing: .12em; text-transform: uppercase;
+          line-height: 1.2; padding: .1rem .42rem .14rem;
+          white-space: nowrap;
         }
         .cb-quote {
           margin: 0;
-          font-family: "IBM Plex Mono", monospace; font-style: italic;
-          font-size: .72rem; line-height: 1.5; color: var(--cb-muted);
+          font-size: .93rem; font-weight: 700; line-height: 1.45;
+          letter-spacing: -.005em; color: var(--cb-text);
+          text-wrap: balance;
         }
         .cb-colophon {
           border-top: 1px solid var(--cb-line);

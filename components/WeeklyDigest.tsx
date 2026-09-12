@@ -2,7 +2,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { statusLabel } from "@/lib/utils";
-import { getQuote } from "@/lib/quotes";
+import { getQuote, type QuoteContext } from "@/lib/quotes";
+import Quip from "@/components/Quip";
 import {
   startOfWeek, endOfWeek, startOfMonth, endOfMonth,
   addWeeks, addMonths, eachDayOfInterval, format, getDay,
@@ -40,11 +41,17 @@ export default function WeeklyDigest({ userId }: Props) {
   const [attendance, setAttendance] = useState<AttRow[]>([]);
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [quote, setQuote] = useState("Keep swinging. You're doing great.");
+  const [quip, setQuip] = useState<{ text: string; ctx: QuoteContext }>({
+    text: "Keep swinging. You're doing great.",
+    ctx: "general",
+  });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     const now = new Date();
+    // Reading the clock after mount is the whole point: the server is
+    // UTC and the reader is IST, so a date picked during render would
+    // be a day out until hydration corrected it.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnchor(now);
     setToday(now);
   }, []);
@@ -122,8 +129,14 @@ export default function WeeklyDigest({ userId }: Props) {
   }, [range, attendance, logs, today]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (m) setQuote(getQuote(m.longestRun >= 3 ? "streak" : "general"));
+    if (m) {
+      const ctx: QuoteContext = m.longestRun >= 3 ? "streak" : "general";
+      // getQuote() is Math.random(), so it can only run after mount —
+      // picking during render gives the server one line and the client
+      // another, and hydration tears.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setQuip({ text: getQuote(ctx), ctx });
+    }
   }, [m?.longestRun, period]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function shift(dir: -1 | 1) {
@@ -325,8 +338,16 @@ export default function WeeklyDigest({ userId }: Props) {
               {(m.logCounts.BLOCKED ?? 0) > 0 && <li><strong>{m.logCounts.BLOCKED}</strong> item{m.logCounts.BLOCKED > 1 ? "s" : ""} still blocked. Worth a nudge?</li>}
               {m.projects.length > 1 && <li>You juggled <strong>{m.projects.length}</strong> different projects. Multitasking hero.</li>}
             </ul>
-            <div className="wd-quote font-mono">&ldquo;{quote}&rdquo;</div>
           </div>
+
+          {/* Sits outside the card — .card hides its overflow and would
+              clip the caption tab off the top of the panel. */}
+          <Quip
+            key={quip.text}
+            quote={quip.text}
+            context={quip.ctx}
+            plate={quip.ctx === "streak"}
+          />
         </>
       )}
 
@@ -337,9 +358,11 @@ export default function WeeklyDigest({ userId }: Props) {
           padding: .4rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer;
           background: var(--surface); color: var(--text-muted);
           border: 2.5px solid var(--border);
-          box-shadow: var(--shadow-xs); transition: transform .12s, background .15s, color .15s;
+          box-shadow: var(--shadow-xs);
+          transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
         }
         .wd-tab:hover { transform: translate(-1px,-1px); color: var(--text); }
+        .wd-tab:active { transform: translate(1px,1px); transition-duration: var(--dur-fast); }
         .wd-tab.active { background: var(--accent); color: #000; }
         .wd-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
         .wd-arrow { padding: .25rem .55rem; font-size: .8rem; box-shadow: var(--shadow-xs); }
@@ -388,7 +411,6 @@ export default function WeeklyDigest({ userId }: Props) {
         .wd-list { display: flex; flex-direction: column; gap: .5rem; padding-left: 1.1rem; margin: 0; }
         .wd-list li { font-size: .84rem; line-height: 1.5; color: var(--text-muted); }
         .wd-list strong { color: var(--text); }
-        .wd-quote { margin-top: 1.1rem; padding-top: .9rem; border-top: 2px solid var(--border); font-size: .78rem; font-style: italic; color: var(--text-muted); text-align: center; }
 
         @media (max-width: 700px) {
           .wd-two { grid-template-columns: 1fr; }
@@ -396,6 +418,20 @@ export default function WeeklyDigest({ userId }: Props) {
           .wd-label { min-width: 0; flex: 1; }
           .wd-cell { min-height: 52px; }
           .wd-cell-day { font-size: .58rem; }
+        }
+
+        /* Seven columns is seven columns however narrow the phone gets,
+           so past this point the cells give up their padding and the
+           gap rather than the day number. */
+        @media (max-width: 430px) {
+          .wd-dow, .wd-grid { gap: .25rem; }
+          .wd-cell { min-height: 46px; padding: .3rem .1rem; gap: .18rem; border-width: 2px; }
+          .wd-cell-day { font-size: .54rem; letter-spacing: -.02em; }
+          .wd-cell-dot { width: 9px; height: 9px; border-width: 2px; }
+          .wd-cell-n { font-size: .54rem; }
+          .wd-row-label { min-width: 88px; font-size: .7rem; }
+          .wd-tabs { width: 100%; }
+          .wd-tab { flex: 1; }
         }
       `}</style>
     </div>

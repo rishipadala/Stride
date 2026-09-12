@@ -48,11 +48,11 @@ export default function EmployeesPage() {
   if (loading) return <div style={{ display:"flex",alignItems:"center",justifyContent:"center",height:"50vh" }}><span className="spinner" style={{width:28,height:28}} /></div>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+      <div className="page-head admin-header">
         <div>
-          <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Employees</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: ".9rem" }}>{employees.length} team {employees.length === 1 ? "member" : "members"}</p>
+          <h1 className="font-title page-title">Employees</h1>
+          <p className="page-sub">{employees.length} team {employees.length === 1 ? "member" : "members"}</p>
         </div>
         <button id="emp-add-toggle" className="btn btn-primary" onClick={() => { setShowForm(!showForm); setAddMsg(null); }}>
           {showForm ? "Cancel" : "+ Add Employee"}
@@ -68,7 +68,7 @@ export default function EmployeesPage() {
           </p>
           {addMsg && <div className={`alert alert-${addMsg.type}`} style={{ marginBottom: "1rem" }}>{addMsg.text}</div>}
           <form onSubmit={addEmployee} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-grid-2">
               <div className="form-group">
                 <label className="input-label">Full Name *</label>
                 <input id="emp-name" className="input" type="text" placeholder="Jane Smith" value={name} onChange={e => setName(e.target.value)} required />
@@ -78,7 +78,7 @@ export default function EmployeesPage() {
                 <input id="emp-email" className="input" type="email" placeholder="jane@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-grid-2">
               <div className="form-group">
                 <label className="input-label">Employment Type</label>
                 <select id="emp-type" className="input" value={empType} onChange={e => setEmpType(e.target.value)}>
@@ -100,7 +100,7 @@ export default function EmployeesPage() {
 
       {/* Employee table */}
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div className="table-wrap">
+        <div className="table-wrap table-scroll">
           <table>
             <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Start Date</th><th>Role</th><th>Actions</th></tr></thead>
             <tbody>

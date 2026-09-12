@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { statusDotClass, statusLabel } from "@/lib/utils";
 
 export default async function AdminDashboard() {
@@ -24,11 +25,11 @@ export default async function AdminDashboard() {
   };
 
   return (
-    <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+    <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       <div>
         <div className="font-mono" style={{ fontSize: ".78rem", color: "var(--text-muted)", marginBottom: ".35rem" }}>{dateDisplay}</div>
-        <h1 className="font-title" style={{ fontSize: "2.2rem", fontWeight: 900, lineHeight: .94 }}>Team Dashboard</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: ".9rem", marginTop: ".25rem" }}>Today&apos;s attendance at a glance</p>
+        <h1 className="font-title page-title">Team Dashboard</h1>
+        <p className="page-sub">Today&apos;s attendance at a glance</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: ".75rem" }}>
@@ -62,7 +63,7 @@ export default async function AdminDashboard() {
                       </div>
                     </td>
                     <td>
-                      <a href={`/admin/employees/${emp.id}`} className="btn btn-ghost" style={{ fontSize: ".78rem", padding: ".3rem .7rem" }}>View &rarr;</a>
+                      <Link href={`/admin/employees/${emp.id}`} className="btn btn-ghost" style={{ fontSize: ".78rem", padding: ".3rem .7rem" }}>View &rarr;</Link>
                     </td>
                   </tr>
                 );

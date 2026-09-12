@@ -47,7 +47,7 @@ export default function OnboardingPage() {
             fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
             textTransform: "uppercase", fontWeight: 900,
             fontSize: "1.8rem", lineHeight: .94, letterSpacing: ".012em",
-            color: "var(--text)", marginBottom: ".5rem",
+            color: "var(--text)", marginBottom: ".5rem", overflowWrap: "anywhere",
           }}>
             {firstName ? `Nice to meet you, ${firstName}!` : "Tell us about yourself"}
           </h1>

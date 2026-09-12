@@ -16,6 +16,7 @@
   --shadow:     5px 5px 0 0 #16120f;
   --shadow-sm:  3px 3px 0 0 #16120f;
   --shadow-xs:  2px 2px 0 0 #16120f;
+  --shadow-lg:  8px 8px 0 0 #16120f;
 
   /* Text — ink on newsprint */
   --text:       #16120f;
@@ -43,6 +44,25 @@
   --radius:     0;
   --radius-lg:  0;
 
+  /* ===== MOTION =====
+     Every hover, press and entrance in the app used its own timing —
+     .1s, .12s, .14s, .15s, .25s, .5s — and all of them linear-ish
+     `ease`. Panels therefore arrived at slightly different speeds
+     from the buttons sitting on them, which is what "not smooth"
+     actually looks like. One curve, three durations, used everywhere.
+     --ease overshoots a hair at the end; on a design with no rounded
+     corners that tiny settle is the only softness there is. */
+  --ease:      cubic-bezier(.2, .85, .3, 1);
+  --ease-out:  cubic-bezier(.16, 1, .3, 1);
+  --dur-fast:  .11s;
+  --dur:       .2s;
+  --dur-slow:  .34s;
+
+  /* Shell gutter — one value the whole layout breathes with, stepped
+     down at each breakpoint instead of being re-declared per page. */
+  --shell-pad: 2rem;
+  --card-pad:  1.5rem;
+
   /* Chevron icon for selects */
   --chevron:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316120f' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   --chevron-sm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2316120f' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -57,6 +77,7 @@
   --shadow:     5px 5px 0 0 rgba(255,255,255,0.06);
   --shadow-sm:  3px 3px 0 0 rgba(255,255,255,0.06);
   --shadow-xs:  2px 2px 0 0 rgba(255,255,255,0.06);
+  --shadow-lg:  8px 8px 0 0 rgba(255,255,255,0.06);
   --text:       #ece6d9;
   --text-muted: #9a93a6;
   --accent:     #ffd831;
@@ -94,7 +115,18 @@
 
 /* ===== RESETS ===== */
 *,*::before,*::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* iOS inflates type in landscape unless told not to, which breaks
+     every fixed size below. */
+  -webkit-text-size-adjust: 100%;
+}
+html, body {
+  /* `clip` rather than `hidden`: hidden turns the root into a scroll
+     container and silently kills position:sticky everywhere. */
+  overflow-x: clip;
+  max-width: 100%;
+}
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -102,8 +134,24 @@ body {
   font-size: 15px;
   line-height: 1.6;
   min-height: 100vh;
-  transition: background-color .2s, color .2s;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* Taps on mobile flashed a grey box over every button and waited
+   300ms before firing. Both are off now, so the press states below
+   are the only feedback. */
+button, a, select, input, textarea, label, summary {
+  -webkit-tap-highlight-color: transparent;
+}
+button, a, select, [role="tab"] { touch-action: manipulation; }
+
+/* Flex and grid items default to min-width:auto, so one long task
+   title or project name stretches its track and pushes the page
+   sideways. This is the single biggest source of horizontal scroll
+   on small screens. */
+.card, .card-sm, .stat-card { min-width: 0; }
 
 /* ===== TYPOGRAPHY =====
    .font-title now maps to Big Shoulders Display — the same
@@ -114,6 +162,36 @@ body {
   letter-spacing: .012em;
 }
 .font-mono  { font-family: "IBM Plex Mono", monospace; }
+
+/* ===== PAGE HEADINGS =====
+   Every page hard-coded 2.2rem inline, which on a 360px phone left
+   "Team Dashboard" and "Achievements" one word per line. Fluid between
+   phone and desktop, declared once. */
+.page-title {
+  font-size: clamp(1.6rem, 1.15rem + 2.1vw, 2.2rem);
+  font-weight: 900;
+  line-height: .94;
+  overflow-wrap: break-word;
+}
+.page-sub {
+  color: var(--text-muted);
+  font-size: clamp(.82rem, .79rem + .16vw, .9rem);
+  margin-top: .3rem;
+  max-width: 62ch;
+}
+
+/* Header row: the title block on the left, one control on the right.
+   Six pages were each writing this same flex-wrap by hand with a
+   different min-width on the control, so the point at which the
+   control dropped to its own line moved from page to page. */
+.page-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.page-head > .form-group { min-width: 160px; }
+@media (max-width: 560px) {
+  .page-head > .form-group { min-width: 100%; }
+}
 
 /* ===== STATUS DOTS ===== */
 .status-dot { width: 10px; height: 10px; display: inline-block; flex-shrink: 0; border: 2px solid var(--border); }
@@ -133,9 +211,10 @@ body {
 .card {
   background: var(--surface);
   border: var(--border-w) solid var(--border);
-  padding: 1.5rem;
+  padding: var(--card-pad);
   box-shadow: var(--shadow);
-  transition: background .2s, border-color .2s, box-shadow .2s;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
   position: relative; overflow: hidden;
 }
 .card-sm {
@@ -143,7 +222,8 @@ body {
   border: var(--border-w) solid var(--border);
   padding: 1rem;
   box-shadow: var(--shadow-sm);
-  transition: background .2s, border-color .2s, box-shadow .2s;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
   position: relative; overflow: hidden;
 }
 
@@ -153,28 +233,37 @@ body {
   gap: 6px; padding: .85rem .5rem;
   border: 2.5px solid var(--border); background: var(--surface);
   color: var(--text); font-family: "Inter", sans-serif;
-  cursor: pointer; transition: all .15s ease;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), color var(--dur) var(--ease),
+              opacity var(--dur-fast) linear;
   box-shadow: var(--shadow-xs);
 }
 .att-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
-.att-card:active { transform: translateY(2px); box-shadow: none; }
+.att-card:active { transform: translateY(2px); box-shadow: none; transition-duration: var(--dur-fast); }
 .att-card:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
 .att-active-PRESENT  { background: #bbf7d0; color: #15803d; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-WFH      { background: #bfdbfe; color: #1d4ed8; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-HALF_DAY { background: #fde68a; color: #92400e; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-LEAVE    { background: #e9d5ff; color: #7e22ce; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 
-/* ===== BUTTONS — MECHANICAL CLICK ===== */
+/* ===== BUTTONS — MECHANICAL CLICK =====
+   The press used to be as slow as the hover, so a tap felt mushy: the
+   button drifted down instead of snapping. Press is now roughly half
+   the hover duration, which is what reads as a mechanism. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   padding: .55rem 1.25rem;
   border: 2.5px solid var(--border); font-family: "Inter", sans-serif;
   font-size: .85rem; font-weight: 700; cursor: pointer;
-  transition: all .1s ease; text-decoration: none;
+  text-decoration: none;
   text-transform: uppercase; letter-spacing: .04em;
   box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), color var(--dur) var(--ease),
+              opacity var(--dur-fast) linear;
 }
-.btn:active { transform: translate(3px, 3px); box-shadow: none; }
+.btn:active { transform: translate(3px, 3px); box-shadow: none; transition-duration: var(--dur-fast); }
 .btn:hover  { transform: translate(-1px, -1px); box-shadow: var(--shadow); }
 
 .btn-primary { background: var(--accent); color: #000; }
@@ -188,11 +277,16 @@ body {
   border: 2.5px solid var(--border);
   color: var(--text); font-family: "Inter", sans-serif;
   font-size: .9rem; padding: .6rem .9rem; outline: none;
-  transition: box-shadow .15s, border-color .15s, background .2s;
+  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              background var(--dur) var(--ease), transform var(--dur) var(--ease);
   box-shadow: var(--shadow-xs);
+  max-width: 100%;
 }
-.input:focus { box-shadow: var(--shadow); }
+.input:focus { box-shadow: var(--shadow); transform: translate(-1px, -1px); }
 .input::placeholder { color: var(--text-muted); opacity: .6; }
+/* Native date/time pickers ignore width:100% inside a flex column on
+   iOS and render at their intrinsic size, which overflowed the card. */
+input[type="date"].input { min-width: 0; appearance: none; }
 .input-label {
   display: block; font-size: .78rem; font-weight: 700;
   color: var(--text); margin-bottom: .35rem;
@@ -204,7 +298,7 @@ select.input {
   background-repeat: no-repeat; background-position: right .75rem center;
   padding-right: 2.5rem;
 }
-.form-group { display: flex; flex-direction: column; gap: .35rem; }
+.form-group { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
 
 /* ===== BADGES — INK BORDERED ===== */
 .badge {
@@ -213,6 +307,7 @@ select.input {
   font-size: .72rem; font-weight: 700;
   letter-spacing: .04em; text-transform: uppercase;
   border: 2px solid var(--border);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .badge-PRESENT, .badge-DONE               { background: #bbf7d0; color: #15803d; }
 .badge-WFH, .badge-IN_PROGRESS            { background: #bfdbfe; color: #1d4ed8; }
@@ -233,10 +328,12 @@ select.input {
   border: 2px solid var(--border);
   cursor: pointer;
   outline: none;
-  transition: all .12s ease;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), color var(--dur) var(--ease);
   background-image: var(--chevron-sm);
   background-repeat: no-repeat;
   background-position: right .4rem center;
+  max-width: 100%;
 }
 .status-select:hover { box-shadow: var(--shadow-xs); transform: translate(-1px, -1px); }
 .status-select:focus { box-shadow: var(--shadow-xs); }
@@ -246,7 +343,24 @@ select.input {
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.animate-in { animation: fadeSlideIn .25s ease forwards; }
+.animate-in { animation: fadeSlideIn var(--dur-slow) var(--ease-out) forwards; }
+
+/* A page that fades in as one block still lands with a thud. Put
+   `stagger` on a page root INSTEAD of `animate-in` — it animates the
+   children rather than the container, so the two never stack their
+   translateY and double the travel. Top-level sections deal themselves
+   in over ~150ms: short enough that nobody waits for it, long enough
+   that the page reads as assembled rather than pasted. Capped at six;
+   anything below the fold is scrolled to anyway, so a longer ladder
+   would only delay content for no one. */
+.stagger > * { animation: fadeSlideIn var(--dur-slow) var(--ease-out) both; }
+.stagger > *:nth-child(1) { animation-delay: .01s; }
+.stagger > *:nth-child(2) { animation-delay: .04s; }
+.stagger > *:nth-child(3) { animation-delay: .07s; }
+.stagger > *:nth-child(4) { animation-delay: .10s; }
+.stagger > *:nth-child(5) { animation-delay: .13s; }
+.stagger > *:nth-child(n+6) { animation-delay: .15s; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 18px; height: 18px;
@@ -272,6 +386,119 @@ select.input {
   0% { transform: var(--strand-rot) scaleY(0); opacity: .7; }
   60% { opacity: .4; }
   100% { transform: var(--strand-rot) scaleY(1); opacity: 0; }
+}
+
+/* ===== QUIP — THE SPIDEY CAPTION PANEL =====
+   lib/quotes.ts has been feeding five different surfaces for a while;
+   the problem was never the writing, it was the setting. Every one of
+   them rendered the line at .78rem, italic, in --text-muted, under a
+   hairline — the exact recipe for a legal disclaimer. Nobody read
+   them.
+
+   So they get the same press the rest of the app is printed on: ink
+   rule, hard shadow, halftone field, a red caption tab notched over
+   the corner and a web strung in the far one. The line itself sits in
+   full ink at reading size, because that is the whole point.
+
+   No quotation marks. In a balloon the shape IS the quotation, and
+   the app already draws one in the landing footer. */
+.quip {
+  position: relative;
+  margin-top: .8rem;              /* clearance for the tab's overhang */
+  padding: 1.2rem 1.3rem;
+  background: var(--surface);
+  border: 2.5px solid var(--border);
+  box-shadow: var(--shadow);
+  animation: quipIn var(--dur-slow) var(--ease-out) both;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+@keyframes quipIn {
+  from { opacity: 0; transform: translateY(10px) scale(.99); }
+  to   { opacity: 1; transform: none; }
+}
+.quip:hover { transform: translate(-3px, -3px); box-shadow: var(--shadow-lg); }
+
+/* Halftone field — the same dot screen as the auth page, so the
+   balloon reads as printed stock rather than a coloured div. */
+.quip::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(var(--text) .65px, transparent .75px),
+    radial-gradient(var(--text) .65px, transparent .75px);
+  background-size: 7px 7px, 7px 7px;
+  background-position: 0 0, 3.5px 3.5px;
+  opacity: .07;
+}
+
+/* Speech tail. A square rotated 45° with two inked edges: the half
+   that overlaps the panel is painted in the panel's own colour, so it
+   erases that stretch of the bottom rule and opens the balloon. */
+.quip::after {
+  content: ''; position: absolute;
+  left: 30px; bottom: -10px;
+  width: 17px; height: 17px;
+  background: var(--surface);
+  border-right: 2.5px solid var(--border);
+  border-bottom: 2.5px solid var(--border);
+  transform: rotate(45deg);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.quip-kicker {
+  position: absolute; top: -.82rem; left: 1rem;
+  background: var(--cb-red); color: #fff;
+  border: 2.5px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  font-size: .84rem; font-weight: 900;
+  letter-spacing: .13em; text-transform: uppercase;
+  line-height: 1.2; padding: .16rem .5rem .2rem;
+  white-space: nowrap;
+}
+
+.quip-text {
+  position: relative;             /* above the halftone layer */
+  margin: 0;
+  font-size: clamp(.96rem, .9rem + .35vw, 1.1rem);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -.005em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+/* Corner web. Masked rather than inlined so it inks itself from
+   --text and follows the theme instead of staying black on the night
+   edition. */
+.quip-web {
+  position: absolute; top: 0; right: 0;
+  width: 62px; height: 62px; pointer-events: none;
+  opacity: .13; background: var(--text);
+  --web: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M60 0 L8 0 M60 0 L60 54 M60 0 L4 16 M60 0 L18 36 M60 0 L38 52'/%3E%3Cpath d='M43 0 Q45 15 60 17 M27 0 Q31 30 60 33 M11 0 Q17 45 60 50'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--web); mask-image: var(--web);
+  -webkit-mask-size: contain;     mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* Plate variant — the yellow press. For the moments worth shouting
+   about: a badge unlocked, a streak running. */
+.quip-plate { background: var(--accent); }
+.quip-plate::after { background: var(--accent); }
+.quip-plate .quip-text { color: #16120f; }
+.quip-plate .quip-web { background: #16120f; opacity: .11; }
+.quip-plate::before { opacity: .1; }
+[data-theme="dark"] .quip-plate::before {
+  background-image:
+    radial-gradient(#16120f .65px, transparent .75px),
+    radial-gradient(#16120f .65px, transparent .75px);
+}
+
+@media (max-width: 560px) {
+  .quip { padding: 1.05rem 1rem 1.1rem; }
+  .quip-kicker { font-size: .78rem; left: .75rem; }
+  .quip::after { left: 22px; }
+  .quip-web { width: 50px; height: 50px; }
 }
 
 /* ===== AUTH PAGES ===== */
@@ -302,19 +529,31 @@ select.input {
 }
 [data-theme="dark"] .auth-card { box-shadow: 6px 6px 0 0 rgba(255,255,255,0.06); }
 
+/* Full-bleed on phones; top-aligned so the keyboard doesn't push the
+   form off-screen when a field takes focus. */
+@media (max-width: 520px) {
+  .auth-page { padding: 1rem; align-items: flex-start; padding-top: 1.75rem; }
+  .auth-card { padding: 1.5rem 1.15rem; }
+}
+
 /* ===== NAV LINKS ===== */
 .nav-link {
   display: flex; align-items: center; gap: 10px;
   padding: .55rem .75rem;
   color: var(--text-muted); font-size: .88rem; font-weight: 600;
-  text-decoration: none; transition: all .12s; white-space: nowrap;
+  text-decoration: none; white-space: nowrap;
   border: 2px solid transparent;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), transform var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
 }
-.nav-link:hover { color: var(--text); background: var(--surface-alt); border-color: var(--border); }
+.nav-link:hover { color: var(--text); background: var(--surface-alt); border-color: var(--border); transform: translateX(2px); }
+.nav-link:active { transform: translateX(2px) scale(.985); transition-duration: var(--dur-fast); }
 .nav-link.active {
   color: #000; background: var(--accent);
   border-color: var(--border); box-shadow: var(--shadow-xs);
 }
+.nav-link.active:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-sm); }
 
 /* ===== STAT CARDS ===== */
 .stat-card {
@@ -322,9 +561,11 @@ select.input {
   padding: 1.1rem 1.25rem;
   display: flex; flex-direction: column; gap: .25rem;
   box-shadow: var(--shadow-sm);
-  transition: background .2s, border-color .2s;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1; }
+.stat-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow); }
+.stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-label { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
 
 /* One card in the row gets the yellow plate: the streak, because it's
@@ -368,7 +609,7 @@ td {
   border-bottom: 1px solid var(--surface-alt); vertical-align: middle;
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--surface-alt); }
+tr:hover td { background: var(--surface-alt); transition: background var(--dur-fast) linear; }
 
 /* ===== MISC ===== */
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: .9rem; font-weight: 500; }
@@ -383,11 +624,13 @@ tr:hover td { background: var(--surface-alt); }
   border: 2.5px solid var(--border); background: var(--surface-alt);
   cursor: pointer; font-size: .78rem; font-weight: 700;
   color: var(--text); gap: .5rem;
-  transition: all .12s ease; box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-xs);
   text-transform: uppercase; letter-spacing: .04em;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .theme-toggle:hover { box-shadow: var(--shadow-sm); transform: translate(-1px, -1px); }
-.theme-toggle:active { transform: translate(2px, 2px); box-shadow: none; }
+.theme-toggle:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: var(--dur-fast); }
 
 /* ===== SEARCH INPUT ===== */
 .search-wrap {
@@ -411,69 +654,122 @@ tr:hover td { background: var(--surface-alt); }
 ::-webkit-scrollbar-thumb:hover { background: var(--text); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #444; }
 
-/* ===== RESPONSIVE — MOBILE FIRST ===== */
+/* ===== RESPONSIVE =====
+   The breakpoints below used to be a pile of one-off patches, each
+   added when a particular page broke, with nothing stepping the
+   layout down between them. They're a ladder now: the shell gutter
+   and card padding shrink at every rung, and the page-specific fixes
+   hang off the rung they belong to.
 
-/* Auth pages full-width on mobile */
-@media (max-width: 520px) {
-  .auth-page { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
-  .auth-card { padding: 1.5rem 1.25rem; }
+   1100 · content column stops clearing the fixed sidebar
+    900 · two-up sections stop fitting side by side
+    768 · sidebar becomes a drawer (see AppShell)
+    640 · tables start scrolling, headings tighten
+    560 · every multi-column grid folds
+    400 · smallest phones still in use */
+
+@media (max-width: 1100px) {
+  :root { --shell-pad: 1.5rem; }
 }
 
-/* Attendance grid: 4 cols on desktop, 2 on mobile.
-   The old span:first-child rule sized an emoji that no longer
-   exists; the label is :first-child now, so it was inflating the
-   uppercase text to 1.2rem and overflowing the 2-col grid. */
+@media (max-width: 900px) {
+  :root { --shell-pad: 1.25rem; --card-pad: 1.3rem; }
+  .stat-value { font-size: 1.6rem; }
+}
+
+/* Touch: no hover to reveal with, and a tapped element keeps :hover
+   until you tap elsewhere — so a button you pressed a minute ago sits
+   there lifted and shadowed as if still under the cursor. Transform
+   hovers are dropped; press states do the work. */
+@media (hover: none) {
+  .btn:hover, .att-card:hover, .stat-card:hover, .theme-toggle:hover,
+  .status-select:hover, .nav-link:hover, .quip:hover, .card:hover {
+    transform: none;
+  }
+  .btn:hover { box-shadow: var(--shadow-sm); }
+  .stat-card:hover { box-shadow: var(--shadow-sm); }
+  .quip:hover { box-shadow: var(--shadow); }
+  .att-card:hover { box-shadow: var(--shadow-xs); }
+  .theme-toggle:hover { box-shadow: var(--shadow-xs); }
+}
+
+@media (max-width: 768px) {
+  :root { --shell-pad: 1rem; --card-pad: 1.15rem; }
+
+  /* Touch targets. 44px is the figure Apple and Google both publish;
+     40 was short enough to mis-tap the delete next to the edit. */
+  .btn { min-height: 44px; }
+  .input { min-height: 44px; }
+  .nav-link { min-height: 44px; }
+  .att-card { min-height: 72px; }
+  .status-select { min-height: 32px; }
+
+  /* iOS zooms the whole page when a focused field is under 16px, then
+     leaves it zoomed. Only applies to the fields you actually type in
+     — buttons and selects can stay at their designed size. */
+  input.input, textarea.input { font-size: 16px; }
+}
+
+@media (max-width: 640px) {
+  .stat-value { font-size: 1.5rem; }
+  .stat-card { padding: .9rem 1rem; }
+  th, td { font-size: .78rem; padding: .5rem .6rem; }
+  /* Admin pages: heading and grids */
+  .admin-header { flex-direction: column !important; align-items: flex-start !important; gap: .75rem !important; }
+  .admin-header button, .admin-header a { width: 100%; justify-content: center; }
+  .employee-grid { grid-template-columns: 1fr !important; }
+}
+
 @media (max-width: 560px) {
+  :root { --card-pad: 1rem; }
+  /* Attendance grid: 4 cols on desktop, 2 here. */
   .att-card { padding: .65rem .35rem; }
   .att-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-}
-
-/* Form: 2-col grid collapses to 1-col on mobile */
-@media (max-width: 560px) {
+  /* Any 2-col form grid folds. */
   .form-grid-2 { grid-template-columns: 1fr !important; }
-}
-
-/* Stats grid: force 2-col minimum on very small screens */
-@media (max-width: 400px) {
+  /* Stats: two across, so the numbers stay big enough to read. */
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .stat-span-2 { grid-column: span 2; }
+  /* A row of buttons becomes a stack rather than a ragged wrap. */
+  .btn-row-stack { flex-direction: column !important; align-items: stretch !important; }
+  .btn-row-stack > .btn { width: 100%; }
 }
 
-/* Tables: horizontal scroll container */
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-@media (max-width: 640px) {
-  .table-scroll table { min-width: 520px; }
-  th, td { font-size: .78rem; padding: .5rem .6rem; }
-}
-
-/* History date picker: stack on mobile */
 @media (max-width: 480px) {
+  /* History date picker: stack */
   .history-filters { flex-direction: column !important; }
   .history-filters .form-group { min-width: 100% !important; }
   .history-filters button { width: 100%; justify-content: center; }
-}
-
-/* Log entries: prevent overflow of delete confirm buttons */
-@media (max-width: 480px) {
+  /* Log entries: keep the confirm buttons inside the panel */
   .log-entry { flex-wrap: wrap; gap: .5rem; }
   .log-entry-actions { width: 100%; justify-content: flex-end; }
 }
 
-/* Admin pages: responsive heading and grids */
-@media (max-width: 640px) {
-  .admin-header { flex-direction: column !important; align-items: flex-start !important; gap: .75rem !important; }
-  .admin-header button { width: 100%; justify-content: center; }
-  .employee-grid { grid-template-columns: 1fr !important; }
-}
-
-/* Improve touch targets on mobile */
-@media (max-width: 768px) {
-  .btn { min-height: 40px; }
-  .input { min-height: 40px; }
-  .nav-link { min-height: 40px; }
-  .att-card { min-height: 70px; }
-}
-
-/* Stat card span-2 collapses on small screens */
 @media (max-width: 400px) {
-  .stat-span-2 { grid-column: span 1; }
+  .stat-value { font-size: 1.35rem; }
+  .stat-span-2 { grid-column: span 2; }
+  .btn { padding: .55rem .9rem; font-size: .8rem; }
+}
+
+/* Tables: horizontal scroll container. Declared outside the ladder —
+   it's structure, not a breakpoint. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+@media (max-width: 640px) {
+  .table-scroll table { min-width: 520px; }
+}
+
+/* ===== REDUCED MOTION =====
+   Only Landing honoured this; the app shell, the drawer, the stagger
+   and the badge pop all ignored it. One global stop, last in the
+   file so it beats everything above. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* The spinner is the one thing that has to keep turning — a frozen
+     spinner reads as a hung page. */
+  .spinner { animation: spin 1.4s linear infinite !important; }
 }

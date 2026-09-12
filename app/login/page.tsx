@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getQuote } from "@/lib/quotes";
+import Quip from "@/components/Quip";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,27 +29,25 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-card animate-in">
         {/* Hero section — no emojis, Big Shoulders Display */}
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.9rem" }}>
           <h1 style={{
             fontFamily: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif',
             textTransform: "uppercase", fontWeight: 900,
             fontSize: "2.6rem", lineHeight: .84, letterSpacing: ".012em",
             color: "var(--text)", marginBottom: ".5rem",
           }}>Stride</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: ".82rem", fontWeight: 500, lineHeight: 1.5 }}>
-            {quote}
+          <p className="font-mono" style={{
+            color: "var(--text-muted)", fontSize: ".6rem", fontWeight: 600,
+            letterSpacing: ".12em", textTransform: "uppercase",
+          }}>
+            Your friendly neighborhood tracker
           </p>
         </div>
 
-        {/* Welcome back */}
-        <div style={{
-          padding: ".6rem .9rem",
-          border: "2.5px solid var(--border)", marginBottom: "1.25rem",
-          background: "var(--accent-dim)", fontSize: ".82rem", fontWeight: 600,
-          boxShadow: "var(--shadow-xs)",
-        }}>
-          Welcome back, hero! Sign in to continue your streak.
-        </div>
+        {/* The quote and the old "Welcome back, hero!" strip were saying
+            the same thing twice, in two different voices. One panel now
+            carries both jobs — greeting and line. */}
+        <Quip key={quote} quote={quote} context="login" plate style={{ marginBottom: "1.6rem" }} />
 
         {error && <div className="alert alert-error" style={{ marginBottom: "1.25rem" }}>{error}</div>}
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
