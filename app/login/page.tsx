@@ -28,6 +28,18 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card animate-in">
+        <Link href="/" id="login-back-to-home" style={{
+          display: "inline-flex", alignItems: "center", gap: ".35rem",
+          fontSize: ".75rem", fontWeight: 600, color: "var(--text-muted)",
+          textDecoration: "none", letterSpacing: ".02em",
+          marginBottom: ".75rem", transition: "color var(--dur-fast, .15s) ease",
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+        >
+          <span aria-hidden="true" style={{ fontSize: ".85rem", lineHeight: 1 }}>←</span>
+          Back to Home
+        </Link>
         {/* Hero section — no emojis, Big Shoulders Display */}
         <div style={{ textAlign: "center", marginBottom: "1.9rem" }}>
           <h1 style={{

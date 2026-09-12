@@ -6,6 +6,7 @@ import Link from "next/link";
 import Quip from "@/components/Quip";
 
 export default function SignupPage() {
+
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +32,18 @@ export default function SignupPage() {
   return (
     <div className="auth-page">
       <div className="auth-card animate-in">
+        <Link href="/" id="signup-back-to-home" style={{
+          display: "inline-flex", alignItems: "center", gap: ".35rem",
+          fontSize: ".75rem", fontWeight: 600, color: "var(--text-muted)",
+          textDecoration: "none", letterSpacing: ".02em",
+          marginBottom: ".75rem", transition: "color var(--dur-fast, .15s) ease",
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+        >
+          <span aria-hidden="true" style={{ fontSize: ".85rem", lineHeight: 1 }}>←</span>
+          Back to Home
+        </Link>
         {/* Same wordmark and tagline as the login screen — the two auth
             pages are one front door, so they should not introduce
             themselves differently. The page's own line goes in the
