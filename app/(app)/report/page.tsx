@@ -156,8 +156,11 @@ export default function ReportPage() {
   const periodNext = () => { if (offset < 0) setOffset(o => o + 1); };
 
   /** One distribution row: label, count, share, and a proportion rule. */
+  // The inline proportion bar that used to ride in a fourth column is
+  // gone. It restated the Share % beside it, and at 34% of the table
+  // width it squeezed the three columns that carried the actual
+  // numbers — which is what made this table read as congested.
   function DistRow({ status, count, total }: { status: string; count: number; total: number }) {
-    const share = pct(count, total);
     return (
       <tr>
         <td className="pd-t-label">
@@ -165,10 +168,7 @@ export default function ReportPage() {
           {statusLabel(status)}
         </td>
         <td className="pd-num">{count}</td>
-        <td className="pd-num pd-muted">{share}%</td>
-        <td className="pd-barcell">
-          <span className="pd-bar"><i style={{ width: `${share}%`, background: INK[status] ?? "#444" }} /></span>
-        </td>
+        <td className="pd-num">{pct(count, total)}%</td>
       </tr>
     );
   }
@@ -212,41 +212,28 @@ export default function ReportPage() {
             </div>
           </section>
 
-          {/* Attendance distribution */}
-          {Object.keys(attCounts).length > 0 && (
-            <section className="pd-section">
-              <h2 className="pd-h2">Attendance</h2>
-              <table className="pd-table">
-                <thead>
-                  <tr><th>Status</th><th className="pd-num">Days</th><th className="pd-num">Share</th><th className="pd-barhead">Distribution</th></tr>
-                </thead>
-                <tbody>
-                  {Object.entries(attCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([s, c]) => <DistRow key={s} status={s} count={c} total={attendance.length} />)}
-                </tbody>
-                <tfoot>
-                  <tr><td>Total recorded</td><td className="pd-num">{attendance.length}</td><td className="pd-num">100%</td><td /></tr>
-                </tfoot>
-              </table>
-            </section>
-          )}
 
           {/* Projects */}
           {projects.length > 0 && (
             <section className="pd-section">
               <h2 className="pd-h2">Projects &amp; clients</h2>
               <table className="pd-table">
+                <colgroup>
+                  <col style={{ width: "46%" }} />
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "18%" }} />
+                </colgroup>
                 <thead>
-                  <tr><th>Project / Client</th><th className="pd-num">Items</th><th className="pd-num">Completed</th><th className="pd-num">Rate</th></tr>
+                  <tr><th className="pd-th-l">Project / Client</th><th>Items</th><th>Completed</th><th>Rate</th></tr>
                 </thead>
                 <tbody>
                   {projects.map(([name, v]) => (
                     <tr key={name}>
-                      <td>{name}</td>
+                      <td className="pd-t-name">{name}</td>
                       <td className="pd-num">{v.items}</td>
                       <td className="pd-num">{v.done}</td>
-                      <td className="pd-num pd-muted">{pct(v.done, v.items)}%</td>
+                      <td className="pd-num">{pct(v.done, v.items)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -254,54 +241,73 @@ export default function ReportPage() {
             </section>
           )}
 
-          {/* Daily record — the body of the document */}
-          <section className="pd-section">
+          {/* Daily record — the body of the document.
+              The date and attendance used to be rowSpan cells beside the
+              tasks. A day with a long note stretched that first row while
+              the task rows stayed short, so every column below it slid out
+              of step and the statuses drifted away from their tasks. Each
+              day is a banded header row instead: the tasks below it are
+              plain rows, so all four columns line up straight down the
+              whole document, and the note gets the full page width. */}
+          <section className="pd-section pd-section-flow">
             <h2 className="pd-h2">Daily record</h2>
             {allDates.length === 0 ? (
               <p className="pd-empty">No activity was recorded in this period.</p>
             ) : (
               <table className="pd-table pd-log">
+                <colgroup>
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "47%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "22%" }} />
+                </colgroup>
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>Date</th>
-                    <th style={{ width: "13%" }}>Attendance</th>
-                    <th style={{ width: "40%" }}>Task</th>
-                    <th style={{ width: "19%" }}>Project</th>
-                    <th style={{ width: "13%" }}>Status</th>
+                    <th>No.</th>
+                    <th className="pd-th-l">Task</th>
+                    <th>Project / Client</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
-                {allDates.map(date => {
+                {allDates.map((date, dateIdx) => {
                   const att = attByDate.get(date);
                   const tasks = logsByDate[date] ?? [];
-                  const span = Math.max(1, tasks.length);
                   return (
                     <tbody key={date} className="pd-day">
-                      {(tasks.length ? tasks : [null]).map((log, i) => (
-                        <tr key={log?.id ?? "none"}>
-                          {i === 0 && (
-                            <>
-                              <td rowSpan={span} className="pd-date">{fmtDocDate(date)}</td>
-                              <td rowSpan={span} className="pd-att">
-                                {att ? statusLabel(att.status) : "—"}
-                                {att?.notes && <em className="pd-note">{att.notes}</em>}
-                              </td>
-                            </>
-                          )}
-                          {log ? (
-                            <>
-                              <td>{log.task}</td>
-                              <td className="pd-muted">{log.client_or_project || "—"}</td>
-                              <td>
-                                <span className="pd-status" style={{ color: INK[log.status] ?? "#444" }}>
-                                  {statusLabel(log.status)}
-                                </span>
-                              </td>
-                            </>
-                          ) : (
-                            <td colSpan={3} className="pd-muted pd-none">No work items logged</td>
-                          )}
+                      {/* Spacer row between days */}
+                      {dateIdx > 0 && (
+                        <tr className="pd-day-spacer"><td colSpan={4} /></tr>
+                      )}
+                      <tr className="pd-dayrow">
+                        <td colSpan={4} className="pd-dayhead">
+                          <span className="pd-day-date">{fmtDocDate(date)}</span>
+                          <span className="pd-day-att">
+                            {att ? statusLabel(att.status) : "Not recorded"}
+                          </span>
+                        </td>
+                      </tr>
+                      {att?.notes && (
+                        <tr>
+                          <td colSpan={4} className="pd-noterow">
+                            <span className="pd-note-label">Note</span>
+                            <span className="pd-note">{att.notes}</span>
+                          </td>
                         </tr>
-                      ))}
+                      )}
+                      {tasks.length ? tasks.map((log, i) => (
+                        <tr key={log.id}>
+                          <td className="pd-idx">{i + 1}</td>
+                          <td className="pd-task">{log.task}</td>
+                          <td>{log.client_or_project || "—"}</td>
+                          <td>
+                            <span className="pd-status" style={{ color: INK[log.status] ?? "#444" }}>
+                              {statusLabel(log.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      )) : (
+                        <tr><td colSpan={4} className="pd-none">No work items logged</td></tr>
+                      )}
                     </tbody>
                   );
                 })}
@@ -485,6 +491,8 @@ export default function ReportPage() {
       </div>
 
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap');
+
         /* The document never shows on screen. */
         .pdf-doc { display: none; }
 
@@ -503,7 +511,7 @@ export default function ReportPage() {
         }
 
         @media print {
-          @page { size: A4; margin: 15mm 14mm 14mm; }
+          @page { size: A4; margin: 18mm 16mm 16mm; }
 
           /* Everything the app draws goes away: sidebar, mobile bar,
              and the whole interactive view. */
@@ -518,9 +526,9 @@ export default function ReportPage() {
           .pdf-doc {
             display: block !important;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #16181d;
-            font-size: 9.6pt;
-            line-height: 1.5;
+            color: #1a1e28;
+            font-size: 10pt;
+            line-height: 1.6;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
@@ -528,156 +536,177 @@ export default function ReportPage() {
 
           /* ---- masthead ---- */
           .pd-masthead {
-            display: flex; align-items: baseline; justify-content: space-between;
-            border-bottom: 1.5pt solid #16181d;
-            padding-bottom: 5pt;
+            display: flex; align-items: center; justify-content: space-between;
+            padding-bottom: 8pt;
+            border-bottom: 2pt solid #1a1e28;
+            margin-bottom: 2pt;
           }
           .pd-brand {
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 15pt; font-weight: 700; letter-spacing: .02em;
+            font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+            font-size: 19pt; font-weight: 900; letter-spacing: .05em;
+            text-transform: uppercase; color: #1a1e28;
           }
           .pd-doctype {
-            font-size: 7.5pt; font-weight: 600;
-            letter-spacing: .18em; text-transform: uppercase; color: #55606e;
+            font-size: 7pt; font-weight: 700;
+            letter-spacing: .22em; text-transform: uppercase; color: #6b7381;
           }
 
-          /* ---- title ---- */
-          .pd-title-block { margin-top: 16pt; }
+          /* ---- title block ---- */
+          .pd-title-block { margin-top: 20pt; }
           .pd-name {
             font-family: Georgia, "Times New Roman", serif;
-            font-size: 23pt; font-weight: 400; line-height: 1.1;
-            margin: 0; letter-spacing: -.01em;
+            font-size: 26pt; font-weight: 400; line-height: 1.05;
+            margin: 0; letter-spacing: -.02em; color: #1a1e28;
           }
-          .pd-ident { margin: 3pt 0 0; font-size: 9pt; color: #55606e; }
+          .pd-ident { margin: 5pt 0 0; font-size: 9.5pt; color: #6b7381; line-height: 1.4; }
 
           /* ---- meta grid ---- */
           .pd-meta {
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 0; margin: 14pt 0 0; padding: 9pt 0;
-            border-top: .5pt solid #c8cdd6; border-bottom: .5pt solid #c8cdd6;
+            gap: 0; margin: 18pt 0 0; padding: 11pt 0;
+            border-top: .75pt solid #c8cdd6; border-bottom: .75pt solid #c8cdd6;
           }
-          .pd-meta > div { padding-right: 10pt; }
+          .pd-meta > div { padding-right: 12pt; }
           .pd-meta dt {
-            font-size: 6.8pt; font-weight: 700; letter-spacing: .13em;
-            text-transform: uppercase; color: #7b8494; margin-bottom: 2pt;
+            font-size: 6.5pt; font-weight: 700; letter-spacing: .15em;
+            text-transform: uppercase; color: #8a919e; margin-bottom: 3pt;
           }
-          .pd-meta dd { margin: 0; font-size: 9pt; font-weight: 500; }
+          .pd-meta dd { margin: 0; font-size: 9.5pt; font-weight: 600; color: #1a1e28; }
 
           /* ---- sections ---- */
-          .pd-section { margin-top: 20pt; break-inside: avoid; page-break-inside: avoid; }
+          .pd-section { margin-top: 26pt; break-inside: avoid; page-break-inside: avoid; }
+          .pd-section-flow { break-inside: auto; page-break-inside: auto; }
           .pd-h2 {
-            font-size: 7.6pt; font-weight: 700; letter-spacing: .15em;
-            text-transform: uppercase; color: #16181d;
-            margin: 0 0 7pt; padding-bottom: 3pt;
-            border-bottom: .5pt solid #16181d;
+            font-size: 6.8pt; font-weight: 800; letter-spacing: .2em;
+            text-transform: uppercase; color: #6b7381;
+            margin: 0 0 10pt; padding-bottom: 4pt;
+            border-bottom: 1pt solid #d0d4dc;
           }
 
           /* ---- headline figures ---- */
-          .pd-figures { display: flex; }
+          .pd-figures { display: flex; gap: 0; margin-bottom: 2pt; }
           .pd-fig {
-            flex: 1; padding: 4pt 8pt 2pt;
-            border-left: .5pt solid #dfe3e9;
+            flex: 1; padding: 8pt 12pt 6pt;
+            border-left: 1pt solid #e0e3ea;
           }
           .pd-fig:first-child { border-left: 0; padding-left: 0; }
           .pd-fig-n {
             display: block;
             font-family: Georgia, "Times New Roman", serif;
-            font-size: 19pt; line-height: 1; font-weight: 400;
-            font-variant-numeric: tabular-nums;
+            font-size: 24pt; line-height: 1; font-weight: 400;
+            font-variant-numeric: tabular-nums; color: #1a1e28;
           }
           .pd-fig-l {
-            display: block; margin-top: 3pt;
-            font-size: 6.8pt; font-weight: 600; letter-spacing: .1em;
-            text-transform: uppercase; color: #7b8494;
+            display: block; margin-top: 4pt;
+            font-size: 6.5pt; font-weight: 700; letter-spacing: .12em;
+            text-transform: uppercase; color: #8a919e;
           }
 
-          /* ---- tables ----
-             Cells carry padding on BOTH sides. With padding-left:0 the
-             text in a column sat flush against the rule to its left,
-             which read as a misalignment even though the column edges
-             were correct. */
-          .pd-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+          /* ---- tables ---- */
+          .pd-table {
+            width: 100%; border-collapse: collapse; table-layout: fixed;
+            border: 1pt solid #3f4759;
+          }
           .pd-table th {
-            font-size: 6.8pt; font-weight: 700; letter-spacing: .11em;
-            text-transform: uppercase; color: #7b8494;
-            text-align: left; padding: 0 7pt 4pt 7pt;
-            border-bottom: .5pt solid #c8cdd6;
-            vertical-align: bottom;
+            font-size: 6.5pt; font-weight: 800; letter-spacing: .13em;
+            text-transform: uppercase; color: #2a3040;
+            background: #dde1ea;
+            text-align: center; vertical-align: middle;
+            padding: 7pt 10pt;
+            border: 1pt solid #3f4759;
           }
-          .pd-table th:first-child,
-          .pd-table td:first-child { padding-left: 0; }
-          .pd-table th:last-child,
-          .pd-table td:last-child { padding-right: 0; }
           .pd-table td {
-            padding: 5pt 7pt;
-            border-bottom: .5pt solid #eceef2;
-            vertical-align: top;
-            overflow-wrap: break-word;
+            padding: 8pt 10pt; border: .75pt solid #9aa0b0;
+            text-align: center; vertical-align: middle;
+            overflow-wrap: break-word; line-height: 1.45;
           }
+          /* Zebra striping for body rows */
+          .pd-table tbody tr:nth-child(even) td:not(.pd-dayhead):not(.pd-noterow):not(.pd-none) {
+            background: #f4f5f9;
+          }
+          .pd-th-l, .pd-t-label, .pd-t-name, .pd-task { text-align: left; }
           .pd-table tfoot td {
-            border-top: .75pt solid #16181d; border-bottom: 0;
-            font-weight: 700; padding-top: 5pt;
+            border-top: 1.5pt solid #1a1e28;
+            background: #e8eaef; font-weight: 700;
           }
-          .pd-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-          .pd-muted { color: #7b8494; }
+          .pd-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+          .pd-muted { color: #8a919e; }
           .pd-t-label { white-space: nowrap; }
 
-          /* status swatch + proportion rule */
           .pd-swatch {
-            display: inline-block; width: 6pt; height: 6pt;
-            margin-right: 5pt; vertical-align: baseline;
+            display: inline-block; width: 7pt; height: 7pt;
+            margin-right: 6pt; vertical-align: middle;
+            border-radius: 1pt;
+            border: .25pt solid rgba(0, 0, 0, .2);
           }
-          .pd-barhead { width: 34%; }
-          .pd-barcell { padding-right: 0 !important; }
-          .pd-bar {
-            display: block; width: 100%; height: 4.5pt;
-            background: #eceef2; margin-top: 2.5pt;
-          }
-          .pd-bar > i { display: block; height: 100%; }
 
           /* ---- daily record ---- */
           .pd-log { margin-top: 2pt; }
-          /* Header repeats on every page the table spills onto. */
           .pd-log thead { display: table-header-group; }
           .pd-day { break-inside: avoid; page-break-inside: avoid; }
-          /* The rule under a day closes the whole day, not each task
-             inside it — internal task rows are separated by space, so
-             a multi-task day reads as one block. */
-          .pd-day td { border-bottom: 0; }
-          .pd-day tr:last-child td { border-bottom: .5pt solid #eceef2; }
-          /* Date and Attendance are rowspanned across a day's tasks.
-             Left as vertical-align:top they floated against the first
-             task; the explicit rules keep every column's first line on
-             one baseline. */
-          .pd-date {
-            font-weight: 600; white-space: nowrap;
-            border-right: .5pt solid #eceef2;
-            vertical-align: top;
+
+          /* Day header band */
+          .pd-table td.pd-dayhead {
+            text-align: left; background: #cdd3e0;
+            padding: 7pt 10pt;
+            border-top: 1.5pt solid #3f4759;
+            border-bottom: 1pt solid #3f4759;
           }
-          .pd-att {
-            border-right: .5pt solid #eceef2;
-            vertical-align: top;
+          .pd-day-date { font-weight: 800; font-size: 10pt; color: #1a1e28; }
+          .pd-day-att {
+            font-size: 7.5pt; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: #3a4252;
           }
+          .pd-day-att::before {
+            content: "\\2022"; margin: 0 6pt;
+            color: #7b8494; font-weight: 400; letter-spacing: 0;
+          }
+          .pd-idx { color: #6b7381; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+          /* Note row — clean left-border treatment, visually separate from task rows */
+          .pd-table td.pd-noterow {
+            text-align: left;
+            background: #f8f9fb;
+            border-left: 3pt solid #8a919e;
+            border-right: .75pt solid #9aa0b0;
+            border-top: none;
+            border-bottom: .75pt solid #c8cdd6;
+            padding: 7pt 12pt 7pt 14pt;
+          }
+          .pd-note-label {
+            display: inline;
+            font-size: 7pt; font-weight: 800; font-style: italic;
+            letter-spacing: .08em;
+            text-transform: uppercase; color: #6b7381;
+            margin-right: 6pt;
+          }
+          .pd-note-label::after { content: " —"; }
           .pd-note {
-            display: block; margin-top: 2pt;
-            font-size: 7.6pt; color: #7b8494; font-style: italic;
+            font-size: 9.5pt; font-weight: 400; color: #3b424f;
+            font-style: italic; line-height: 1.6;
           }
-          /* Sits on the same first baseline as the task text beside it
-             rather than riding high off its own smaller size. */
+
+          /* Spacer between days */
+          .pd-day-spacer td {
+            border: none !important;
+            background: transparent !important;
+            padding: 0; height: 7pt;
+          }
+
           .pd-status {
             display: inline-block;
-            font-size: 7.4pt; font-weight: 700; line-height: 1.45;
-            letter-spacing: .07em; text-transform: uppercase;
+            font-size: 7.5pt; font-weight: 700; line-height: 1.4;
+            letter-spacing: .05em; text-transform: uppercase;
           }
-          .pd-none { font-style: italic; }
-          .pd-empty { font-size: 9pt; color: #7b8494; font-style: italic; margin: 0; }
+          .pd-none { color: #8a919e; font-style: italic; font-size: 9pt; }
+          .pd-empty { font-size: 9.5pt; color: #8a919e; margin: 0; }
 
           /* ---- footer ---- */
           .pd-footer {
             display: flex; justify-content: space-between;
-            margin-top: 22pt; padding-top: 6pt;
-            border-top: .5pt solid #c8cdd6;
-            font-size: 7.2pt; color: #7b8494;
+            margin-top: 28pt; padding-top: 7pt;
+            border-top: .75pt solid #c8cdd6;
+            font-size: 7pt; color: #8a919e; letter-spacing: .03em;
           }
         }
       `}</style>
