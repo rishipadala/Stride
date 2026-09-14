@@ -773,3 +773,23 @@ tr:hover td { background: var(--surface-alt); transition: background var(--dur-f
      spinner reads as a hung page. */
   .spinner { animation: spin 1.4s linear infinite !important; }
 }
+
+/* ===== PRINT OVERRIDES =====
+   Global safeguard: hide app chrome, navigation bars, and mobile
+   headers when generating or printing PDF reports so they never repeat
+   at the top of printed pages. */
+@media print {
+  .sidebar,
+  .mobile-header,
+  .app-scrim,
+  .screen-only,
+  header.mobile-header,
+  aside.sidebar {
+    display: none !important;
+    visibility: hidden !important;
+    position: static !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+  }
+}

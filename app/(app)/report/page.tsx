@@ -514,12 +514,20 @@ export default function ReportPage() {
           @page { size: A4; margin: 18mm 16mm 16mm; }
 
           /* Everything the app draws goes away: sidebar, mobile bar,
-             and the whole interactive view. */
-          .sidebar, .mobile-header, .screen-only { display: none !important; }
+             scrim, and the whole interactive view. */
+          .sidebar, .mobile-header, .screen-only, .app-scrim,
+          header.mobile-header, aside.sidebar {
+            display: none !important;
+            visibility: hidden !important;
+            position: static !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+          }
 
           /* AppShell centres main in a 900px column with inline
              styles, which only !important can beat. */
-          main { margin-left: 0 !important; padding: 0 !important; }
+          main { margin: 0 !important; padding: 0 !important; }
           main > div { max-width: none !important; margin: 0 !important; }
           html, body { background: #fff !important; }
 

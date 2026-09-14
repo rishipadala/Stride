@@ -303,7 +303,7 @@ export default function AppShell({ children, profile }: { children: React.ReactN
         @keyframes scrimIn { from { opacity: 0; } to { opacity: 1; } }
         .app-scrim { animation: scrimIn var(--dur) var(--ease-out); }
 
-        @media (max-width: 768px) {
+        @media screen and (max-width: 768px) {
           .sidebar { transform: translateX(-100%); }
           main {
             margin-left: 0 !important;
@@ -315,6 +315,20 @@ export default function AppShell({ children, profile }: { children: React.ReactN
             position: fixed; top: 0; left: 0; right: 0; height: 56px;
             background: var(--surface); border-bottom: 2.5px solid var(--border);
             padding: 0 var(--shell-pad); z-index: 30;
+          }
+        }
+
+        @media print {
+          .sidebar, .mobile-header, .app-scrim {
+            display: none !important;
+            visibility: hidden !important;
+            position: static !important;
+            height: 0 !important;
+          }
+          main {
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-top: 0 !important;
           }
         }
       `}</style>
