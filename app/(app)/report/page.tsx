@@ -130,7 +130,12 @@ export default function ReportPage() {
   const totalWorked = attendance.filter(a => ["PRESENT", "WFH", "HALF_DAY"].includes(a.status)).length;
   const totalLeave = attendance.filter(a => a.status === "LEAVE").length;
   const totalDone = logs.filter(l => l.status === "DONE").length;
-  const completion = pct(totalDone, logs.length);
+  const totalBlocked = logs.filter(l => l.status === "BLOCKED").length;
+  // Completion rate only counts terminal statuses (DONE + BLOCKED).
+  // IN_PROGRESS / WAITING_ON_CLIENT / TO_IMPLEMENT are daily snapshots
+  // of the same task, not separate incomplete items.
+  const completionBase = totalDone + totalBlocked;
+  const completion = pct(totalDone, completionBase);
   const calendarDays = Math.round(
     (new Date(to + "T00:00:00").getTime() - new Date(from + "T00:00:00").getTime()) / 86400000
   ) + 1;
