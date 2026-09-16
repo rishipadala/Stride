@@ -5,12 +5,12 @@ import { statusLabel, fmtDate, toISODate, employmentLabel } from "@/lib/utils";
 
 /* On-screen chips keep the app's pastel plates. */
 const STATUS_BG: Record<string, string> = {
-  PRESENT: "#bbf7d0", WFH: "#bfdbfe", HALF_DAY: "#fde68a", LEAVE: "#e9d5ff",
+  PRESENT: "#bbf7d0", WFH: "#bfdbfe", HALF_DAY: "#fde68a", LEAVE: "#e9d5ff", HOLIDAY: "#a5f3fc",
   DONE: "#bbf7d0", IN_PROGRESS: "#bfdbfe", WAITING_ON_CLIENT: "#fde68a",
   TO_IMPLEMENT: "#e9d5ff", BLOCKED: "#fecaca",
 };
 const STATUS_FG: Record<string, string> = {
-  PRESENT: "#15803d", WFH: "#1d4ed8", HALF_DAY: "#92400e", LEAVE: "#7e22ce",
+  PRESENT: "#15803d", WFH: "#1d4ed8", HALF_DAY: "#92400e", LEAVE: "#7e22ce", HOLIDAY: "#0e7490",
   DONE: "#15803d", IN_PROGRESS: "#1d4ed8", WAITING_ON_CLIENT: "#92400e",
   TO_IMPLEMENT: "#7e22ce", BLOCKED: "#dc2626",
 };
@@ -31,7 +31,7 @@ const STATUS_FG: Record<string, string> = {
 /* Print inks: deep enough to stay legible on paper and in
    greyscale, unlike the on-screen pastels which wash out. */
 const INK: Record<string, string> = {
-  PRESENT: "#1b5e20", WFH: "#0d47a1", HALF_DAY: "#e65100", LEAVE: "#4a148c",
+  PRESENT: "#1b5e20", WFH: "#0d47a1", HALF_DAY: "#e65100", LEAVE: "#4a148c", HOLIDAY: "#006064",
   DONE: "#1b5e20", IN_PROGRESS: "#0d47a1", WAITING_ON_CLIENT: "#e65100",
   TO_IMPLEMENT: "#4a148c", BLOCKED: "#b71c1c",
 };

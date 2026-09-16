@@ -9,7 +9,7 @@ import {
   addWeeks, addMonths, eachDayOfInterval, format, getDay,
 } from "date-fns";
 
-type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE";
+type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE" | "HOLIDAY";
 type WorkLogStatus = "DONE" | "IN_PROGRESS" | "WAITING_ON_CLIENT" | "TO_IMPLEMENT" | "BLOCKED";
 
 interface AttRow { date: string; status: AttendanceStatus; notes: string | null; }
@@ -17,9 +17,9 @@ interface LogRow { id: string; date: string; task: string; client_or_project: st
 
 type Period = "week" | "month";
 
-const ATT_ORDER: AttendanceStatus[] = ["PRESENT", "WFH", "HALF_DAY", "LEAVE"];
+const ATT_ORDER: AttendanceStatus[] = ["PRESENT", "WFH", "HALF_DAY", "LEAVE", "HOLIDAY"];
 const ATT_COLOR: Record<AttendanceStatus, string> = {
-  PRESENT: "var(--present)", WFH: "var(--wfh)", HALF_DAY: "var(--half-day)", LEAVE: "var(--to-impl)",
+  PRESENT: "var(--present)", WFH: "var(--wfh)", HALF_DAY: "var(--half-day)", LEAVE: "var(--to-impl)", HOLIDAY: "var(--cb-cyan)",
 };
 const LOG_ORDER: WorkLogStatus[] = ["DONE", "IN_PROGRESS", "WAITING_ON_CLIENT", "TO_IMPLEMENT", "BLOCKED"];
 const LOG_COLOR: Record<WorkLogStatus, string> = {

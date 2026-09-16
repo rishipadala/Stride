@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { statusLabel, todayISO, isoDaysAgo } from "@/lib/utils";
 
-type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE";
+type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE" | "HOLIDAY";
 type WorkLogStatus = "DONE" | "IN_PROGRESS" | "WAITING_ON_CLIENT" | "TO_IMPLEMENT" | "BLOCKED";
 
 interface AttRow { date: string; status: AttendanceStatus; notes: string | null; }
@@ -66,6 +66,9 @@ function AttMark({ status }: { status: AttendanceStatus | null }) {
   }
   if (status === "LEAVE") {
     return <svg {...S}>{box}<path d="M2 12 L12 2" stroke="currentColor" strokeWidth={2} /></svg>;
+  }
+  if (status === "HOLIDAY") {
+    return <svg {...S}>{box}<path d="M7 3 L8.2 6.2 L11.6 6.5 L9 8.8 L9.8 12.2 L7 10.2 L4.2 12.2 L5 8.8 L2.4 6.5 L5.8 6.2 Z" fill="currentColor" transform="translate(0,0.5)" /></svg>;
   }
   return <svg {...S}><rect x={1} y={1} width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2} strokeDasharray="3 2" opacity={0.5} /></svg>;
 }

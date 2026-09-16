@@ -199,6 +199,7 @@ button, a, select, [role="tab"] { touch-action: manipulation; }
 .dot-wfh        { background: var(--wfh); }
 .dot-half-day   { background: var(--half-day); }
 .dot-leave      { background: var(--to-impl); }
+.dot-holiday    { background: var(--cb-cyan); }
 .dot-absent     { background: var(--absent); }
 .dot-done       { background: var(--present); }
 .dot-in-progress{ background: var(--wfh); }
@@ -246,6 +247,7 @@ button, a, select, [role="tab"] { touch-action: manipulation; }
 .att-active-WFH      { background: #bfdbfe; color: #1d4ed8; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-HALF_DAY { background: #fde68a; color: #92400e; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 .att-active-LEAVE    { background: #e9d5ff; color: #7e22ce; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
+.att-active-HOLIDAY  { background: #a5f3fc; color: #0e7490; box-shadow: var(--shadow-sm); transform: translateY(-2px); border-width: 2.5px; }
 
 /* ===== BUTTONS — MECHANICAL CLICK =====
    The press used to be as slow as the hover, so a tap felt mushy: the
@@ -724,7 +726,7 @@ tr:hover td { background: var(--surface-alt); transition: background var(--dur-f
   :root { --card-pad: 1rem; }
   /* Attendance grid: 4 cols on desktop, 2 here. */
   .att-card { padding: .65rem .35rem; }
-  .att-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .att-grid-5 { grid-template-columns: repeat(2, 1fr) !important; }
   /* Any 2-col form grid folds. */
   .form-grid-2 { grid-template-columns: 1fr !important; }
   /* Stats: two across, so the numbers stay big enough to read. */

@@ -52,7 +52,11 @@ const isRestDay = (d: Date) => { const g = getDay(d); return g === 0 || g === 6;
 
 export function computeStats(attendance: AttLike[], logs: LogLike[]): AchievementStats {
   const showUp = new Set(attendance.filter(a => SHOW_UP.has(a.status)).map(a => a.date));
+  const holidays = new Set(attendance.filter(a => a.status === "HOLIDAY").map(a => a.date));
   const engaged = new Set([...attendance.map(a => a.date), ...logs.map(l => l.date)]);
+
+  /** A day off that shouldn't break your streak — weekend OR holiday. */
+  const isOff = (d: Date) => isRestDay(d) || holidays.has(iso(d));
 
   // ---- streaks ----
   let longestStreak = 0;
@@ -64,7 +68,7 @@ export function computeStats(attendance: AttLike[], logs: LogLike[]): Achievemen
     let run = 0;
     for (const d of eachDayOfInterval({ start: first, end: last })) {
       if (showUp.has(iso(d))) { run++; longestStreak = Math.max(longestStreak, run); }
-      else if (!isRestDay(d)) run = 0;
+      else if (!isOff(d)) run = 0;
     }
     // A "comeback" = returning after a gap of 7+ days.
     for (let i = 1; i < sorted.length; i++) {
@@ -81,7 +85,7 @@ export function computeStats(attendance: AttLike[], logs: LogLike[]): Achievemen
   for (let i = 0; i < 3650; i++) {
     const key = iso(cursor);
     if (showUp.has(key)) currentStreak++;
-    else if (!isRestDay(cursor)) break;
+    else if (!isOff(cursor)) break;
     cursor = subDays(cursor, 1);
   }
 

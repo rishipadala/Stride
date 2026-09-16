@@ -8,10 +8,10 @@ import { statusLabel } from "@/lib/utils";
 const STATUS_COLORS: Record<string, string> = {
   DONE: "#6fae7f", IN_PROGRESS: "#5b9bd5", WAITING_ON_CLIENT: "#c9974c",
   TO_IMPLEMENT: "#9b8fd4", BLOCKED: "#c96b6b",
-  PRESENT: "#6fae7f", WFH: "#5b9bd5", HALF_DAY: "#c9974c", LEAVE: "#9b8fd4",
+  PRESENT: "#6fae7f", WFH: "#5b9bd5", HALF_DAY: "#c9974c", LEAVE: "#9b8fd4", HOLIDAY: "#12a5d4",
 };
 
-type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE";
+type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE" | "HOLIDAY";
 
 interface AttRow { user_id: string; date: string; status: AttendanceStatus; }
 interface LogRow { user_id: string; date: string; status: string; }

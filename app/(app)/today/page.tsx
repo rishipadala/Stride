@@ -9,7 +9,7 @@ import { webBurstFrom } from "@/lib/webBurst";
 import { getQuote, contextForMoment, type QuoteContext } from "@/lib/quotes";
 import Quip from "@/components/Quip";
 
-type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE";
+type AttendanceStatus = "PRESENT" | "HALF_DAY" | "WFH" | "LEAVE" | "HOLIDAY";
 type WorkLogStatus = "DONE" | "IN_PROGRESS" | "WAITING_ON_CLIENT" | "TO_IMPLEMENT" | "BLOCKED";
 
 const ATTENDANCE_OPTIONS: { value: AttendanceStatus; label: string }[] = [
@@ -17,6 +17,7 @@ const ATTENDANCE_OPTIONS: { value: AttendanceStatus; label: string }[] = [
   { value: "WFH",      label: "WFH" },
   { value: "HALF_DAY", label: "Half Day" },
   { value: "LEAVE",    label: "Leave" },
+  { value: "HOLIDAY",  label: "Holiday" },
 ];
 
 const LOG_STATUS_OPTIONS: { value: WorkLogStatus; label: string }[] = [
@@ -323,7 +324,7 @@ function TodayPageInner() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".6rem", marginBottom: "1rem" }} className="att-grid-4">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: ".6rem", marginBottom: "1rem" }} className="att-grid-5">
               {ATTENDANCE_OPTIONS.map(opt => {
                 const isActive = attendance === opt.value;
                 return (
